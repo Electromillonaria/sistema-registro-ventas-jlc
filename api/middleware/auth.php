@@ -1,5 +1,9 @@
 <?php
+require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../utils/JWT.php';
+
+// Forzar carga del .env
+Database::getInstance();
 
 function requireAuth() {
     $headers = apache_request_headers();

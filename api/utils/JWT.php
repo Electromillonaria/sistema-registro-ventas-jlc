@@ -1,6 +1,5 @@
 <?php
 class JWT {
-    private static $secret_key = 'JLC_SECRET_KEY_CHANGE_ME_IN_ENV'; // En producción usar getenv()
     private static $algorithm = 'HS256';
 
     public static function generate($data) {

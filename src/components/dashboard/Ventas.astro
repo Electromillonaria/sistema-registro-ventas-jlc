@@ -1,44 +1,6 @@
 ---
 import Card from "../Card.astro";
 import Button from "../Button.astro";
-
-// Datos de ejemplo - En producción estos vendrían del API
-const sales = [
-  {
-    id: 1,
-    fecha: "2025-12-17",
-    factura: "FCT-001",
-    producto: "JLC-2024-A1",
-    serie: "SN-ABC-123",
-    estado: "Aprobado",
-  },
-  {
-    id: 2,
-    fecha: "2025-12-16",
-    factura: "FCT-002",
-    producto: "JLC-2024-B2",
-    serie: "SN-DEF-456",
-    estado: "Pendiente",
-  },
-  {
-    id: 3,
-    fecha: "2025-12-15",
-    factura: "FCT-003",
-    producto: "JLC-2024-A2",
-    serie: "SN-GHI-789",
-    estado: "Rechazado",
-  },
-  {
-    id: 4,
-    fecha: "2025-12-14",
-    factura: "FCT-004",
-    producto: "JLC-2024-A1",
-    serie: "SN-JKL-012",
-    estado: "Aprobado",
-  },
-];
-
-const products = ["JLC-2024-A1", "JLC-2024-A2", "JLC-2024-B1", "JLC-2024-B2"];
 ---
 
 <Card title="Historial de Ventas">
@@ -59,50 +21,42 @@ const products = ["JLC-2024-A1", "JLC-2024-A2", "JLC-2024-B1", "JLC-2024-B2"];
         />
       </div>
       <div class="form-group">
-        <label for="filtro-producto" class="form-label sr-only">Producto</label>
         <select id="filtro-producto" class="form-input">
           <option value="">Todos los productos</option>
-          {products.map((p) => <option value={p}>{p}</option>)}
         </select>
       </div>
-      <div class="date-filters">
-        <label for="fecha_desde" class="form-label sr-only">Fecha Desde</label>
-        <input type="date" id="fecha_desde" class="form-input" />
-        <label for="fecha_hasta" class="form-label sr-only">Fecha Hasta</label>
-        <input type="date" id="fecha_hasta" class="form-input" />
-      </div>
       <Button variant="outline" id="filter-btn">Filtrar</Button>
-    </div>
-    <div class="export-buttons">
-      <Button variant="ghost" id="export-excel">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          class="nav-icon"
-          ><path
-            d="M4 2.5A1.5 1.5 0 002.5 4v16A1.5 1.5 0 004 21.5h16a1.5 1.5 0 001.5-1.5V4A1.5 1.5 0 0020 2.5H4zM9.855 4h4.29l.375.375v2.25H9.48V4.375L9.855 4zm4.29 15.5H9.855v-9H14.145v9zM5.5 19.5V14h3.355v5.5H5.5zm13 0h-3.355V14h3.355v5.5zM19.5 9.5H4.5V4.375l.375-.375h3.98v2.25h6.29V4h3.98l.375.375V9.5z"
-          ></path></svg
-        >
-        Excel
-      </Button>
-      <Button variant="ghost" id="export-csv">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          class="nav-icon"
-          ><path
-            d="M4.5 4.5a.75.75 0 00-1.5 0v15a.75.75 0 001.5 0v-15zM19.5 4.5a.75.75 0 00-1.5 0v15a.75.75 0 001.5 0v-15zM6.75 6a.75.75 0 000 1.5h4.5a.75.75 0 000-1.5h-4.5zM6 11.25a.75.75 0 01.75-.75h4.5a.75.75 0 010 1.5h-4.5a.75.75 0 01-.75-.75zm.75 4.5a.75.75 0 000 1.5h4.5a.75.75 0 000-1.5h-4.5zM14.25 6a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3zm0 5.25a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3zm0 4.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z"
-          ></path></svg
-        >
-        CSV
-      </Button>
     </div>
   </div>
 
   <div class="sales-table-wrapper">
-    <table class="sales-table">
+    <div id="loading-state" class="state-message">
+      <div class="spinner"></div>
+      <p>Cargando ventas...</p>
+    </div>
+
+    <div id="error-state" class="state-message" style="display: none;">
+      <svg class="error-icon" viewBox="0 0 20 20" fill="currentColor"
+        ><path
+          fill-rule="evenodd"
+          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
+          clip-rule="evenodd"></path></svg
+      >
+      <p>Error al cargar las ventas</p>
+      <Button variant="outline" id="retry-btn">Reintentar</Button>
+    </div>
+
+    <div id="empty-state" class="state-message" style="display: none;">
+      <svg class="empty-icon" viewBox="0 0 20 20" fill="currentColor"
+        ><path
+          fill-rule="evenodd"
+          d="M5.5 3A2.5 2.5 0 003 5.5v9A2.5 2.5 0 005.5 17h9a2.5 2.5 0 002.5-2.5v-9A2.5 2.5 0 0014.5 3h-9zm5.25 9.5a.75.75 0 00-1.5 0V14a.75.75 0 001.5 0v-1.5zM10 8a.75.75 0 01.75.75v2.5a.75.75 0 01-1.5 0v-2.5A.75.75 0 0110 8z"
+          clip-rule="evenodd"></path></svg
+      >
+      <p>No hay ventas registradas</p>
+    </div>
+
+    <table class="sales-table" id="sales-table" style="display: none;">
       <thead>
         <tr>
           <th>Fecha</th>
@@ -110,87 +64,72 @@ const products = ["JLC-2024-A1", "JLC-2024-A2", "JLC-2024-B1", "JLC-2024-B2"];
           <th>Producto</th>
           <th>N° Serie</th>
           <th>Estado</th>
-          <th>Acciones</th>
         </tr>
       </thead>
-      <tbody>
-        {
-          sales.map((sale) => (
-            <tr data-sale-id={sale.id}>
-              <td>{sale.fecha}</td>
-              <td>{sale.factura}</td>
-              <td>{sale.producto}</td>
-              <td>{sale.serie}</td>
-              <td>
-                <span
-                  class={`status-badge status-${sale.estado.toLowerCase()}`}
-                >
-                  {sale.estado}
-                </span>
-              </td>
-              <td class="actions-cell">
-                <button class="action-btn" title="Ver Foto">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M1 5.25A2.25 2.25 0 013.25 3h13.5A2.25 2.25 0 0119 5.25v9.5A2.25 2.25 0 0116.75 17H3.25A2.25 2.25 0 011 14.75v-9.5zm1.5 5.81v3.69c0 .414.336.75.75.75h13.5a.75.75 0 00.75-.75v-2.69l-2.22-2.219a.75.75 0 00-1.06 0l-1.91 1.909-.48-.48a.75.75 0 00-1.06 0l-5.18 5.182H2.5v-3.578l3.22-3.22a.75.75 0 011.06 0l1.47 1.47 1.91-1.909a.75.75 0 011.06 0l2.97 2.97zM10 8a2 2 0 100-4 2 2 0 000 4z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </button>
-                <button class="action-btn" title="Editar">
-                  <svg viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                  </svg>
-                </button>
-              </td>
-            </tr>
-          ))
-        }
+      <tbody id="sales-tbody">
+        <!-- Contenido dinámico -->
       </tbody>
     </table>
   </div>
 </Card>
 
 <style>
-  /* General Styles */
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
-  }
-  .filters-container {
+  /* States */
+  .state-message {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-    gap: 1.5rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    text-align: center;
+    color: var(--color-text-secondary);
   }
+
+  .state-message p {
+    margin: 1rem 0;
+    font-size: 1.125rem;
+  }
+
+  .spinner {
+    border: 3px solid var(--color-border);
+    border-top-color: var(--color-accent);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .error-icon,
+  .empty-icon {
+    width: 3rem;
+    height: 3rem;
+    color: var(--color-text-secondary);
+  }
+
+  /* Filters */
+  .filters-container {
+    margin-bottom: 2rem;
+  }
+
   .main-filters {
     display: flex;
-    flex-grow: 1;
     align-items: center;
     flex-wrap: wrap;
     gap: 1rem;
   }
 
-  /* Search and filter inputs */
   .search-wrapper {
     position: relative;
     flex-grow: 1;
     min-width: 200px;
   }
+
   .search-icon {
     position: absolute;
     left: 0.875rem;
@@ -200,56 +139,38 @@ const products = ["JLC-2024-A1", "JLC-2024-A2", "JLC-2024-B1", "JLC-2024-B2"];
     height: 1.25rem;
     color: var(--color-text-secondary);
   }
+
   .search-input {
     padding-left: 2.75rem;
   }
+
   .form-group {
     margin-bottom: 0;
-  }
-  .date-filters {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-
-  /* Export buttons */
-  .export-buttons {
-    display: flex;
-    gap: 0.5rem;
-  }
-  .export-buttons .btn-ghost {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--color-text-secondary);
-  }
-  .export-buttons .btn-ghost:hover {
-    color: var(--color-text-main);
-  }
-  .nav-icon {
-    width: 1.25rem;
-    height: 1.25rem;
   }
 
   /* Table */
   .sales-table-wrapper {
     overflow-x: auto;
+    min-height: 300px;
   }
+
   .sales-table {
     width: 100%;
     border-collapse: collapse;
     text-align: left;
     font-size: 0.9rem;
   }
+
   .sales-table th,
   .sales-table td {
     padding: 0.875rem 1.25rem;
     border-bottom: 1px solid var(--color-border);
-    white-space: nowrap;
   }
+
   .sales-table thead {
     background-color: var(--color-bg-card);
   }
+
   .sales-table th {
     text-transform: uppercase;
     font-size: 0.75rem;
@@ -257,6 +178,7 @@ const products = ["JLC-2024-A1", "JLC-2024-A2", "JLC-2024-B1", "JLC-2024-B2"];
     color: var(--color-text-secondary);
     letter-spacing: 0.05em;
   }
+
   .sales-table tbody tr:hover {
     background-color: var(--color-bg-card);
   }
@@ -269,84 +191,199 @@ const products = ["JLC-2024-A1", "JLC-2024-A2", "JLC-2024-B1", "JLC-2024-B2"];
     font-weight: 600;
     border-radius: 9999px;
   }
-  .status-aprobado {
+
+  .status-aprobada {
     background-color: rgba(56, 161, 105, 0.2);
     color: #68d391;
   }
+
   .status-pendiente {
     background-color: rgba(221, 107, 32, 0.2);
     color: #f6ad55;
   }
-  .status-rechazado {
+
+  .status-rechazada {
     background-color: rgba(229, 62, 62, 0.2);
     color: #fc8181;
   }
-
-  /* Action Buttons */
-  .actions-cell {
-    display: flex;
-    gap: 0.75rem;
-  }
-  .action-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    color: var(--color-text-secondary);
-    transition: color 0.2s;
-  }
-  .action-btn:hover {
-    color: var(--color-text-main);
-  }
-  .action-btn svg {
-    width: 1.25rem;
-    height: 1.25rem;
-  }
 </style>
 
-<script>
-  function setupExportButtons() {
-    const exportExcelBtn = document.getElementById("export-excel");
-    const exportCsvBtn = document.getElementById("export-csv");
+<script is:inline>
+  (function () {
+    const API_BASE = "http://localhost:8000";
 
-    const getFilterParams = () => {
-      const search = (document.getElementById("search") as HTMLInputElement)
-        .value;
-      const producto = (
-        document.getElementById("filtro-producto") as HTMLSelectElement
-      ).value;
-      const fecha_desde = (
-        document.getElementById("fecha_desde") as HTMLInputElement
-      ).value;
-      const fecha_hasta = (
-        document.getElementById("fecha_hasta") as HTMLInputElement
-      ).value;
+    let allSales = [];
+    let allProducts = [];
 
-      const params = new URLSearchParams();
-      if (search) params.append("q", search);
-      if (producto) params.append("producto_id", producto);
-      if (fecha_desde) params.append("fecha_desde", fecha_desde);
-      if (fecha_hasta) params.append("fecha_hasta", fecha_hasta);
+    // Elementos DOM
+    const loadingState = document.getElementById("loading-state");
+    const errorState = document.getElementById("error-state");
+    const emptyState = document.getElementById("empty-state");
+    const salesTable = document.getElementById("sales-table");
+    const salesTbody = document.getElementById("sales-tbody");
+    const retryBtn = document.getElementById("retry-btn");
+    const filterBtn = document.getElementById("filter-btn");
+    const searchInput = document.getElementById("search");
+    const productFilter = document.getElementById("filtro-producto");
 
-      return params.toString();
-    };
+    // Funciones de estado
+    function showLoading() {
+      loadingState.style.display = "flex";
+      errorState.style.display = "none";
+      emptyState.style.display = "none";
+      salesTable.style.display = "none";
+    }
 
-    exportExcelBtn?.addEventListener("click", () => {
-      const params = getFilterParams();
-      // In a real app, this would be a full URL to the backend
-      const url = `/api/reportes/excel.php?${params}`;
-      console.log(`Exporting to Excel: ${url}`);
-      // window.location.href = url;
-    });
+    function showError() {
+      loadingState.style.display = "none";
+      errorState.style.display = "flex";
+      emptyState.style.display = "none";
+      salesTable.style.display = "none";
+    }
 
-    exportCsvBtn?.addEventListener("click", () => {
-      const params = getFilterParams();
-      // You might have a different endpoint for CSV or pass a format parameter
-      const url = `/api/reportes/csv.php?${params}`;
-      console.log(`Exporting to CSV: ${url}`);
-      // window.location.href = url;
-    });
-  }
+    function showEmpty() {
+      loadingState.style.display = "none";
+      errorState.style.display = "none";
+      emptyState.style.display = "flex";
+      salesTable.style.display = "none";
+    }
 
-  document.addEventListener("astro:page-load", setupExportButtons);
+    function showTable() {
+      loadingState.style.display = "none";
+      errorState.style.display = "none";
+      emptyState.style.display = "none";
+      salesTable.style.display = "table";
+    }
+
+    // Cargar productos para filtro
+    async function loadProducts() {
+      try {
+        const response = await fetch(`${API_BASE}/products/list.php`);
+        const data = await response.json();
+
+        if (data.status === 200 && data.data) {
+          allProducts = data.data;
+          populateProductFilter();
+        }
+      } catch (error) {
+        console.error("Error cargando productos:", error);
+      }
+    }
+
+    function populateProductFilter() {
+      const currentValue = productFilter.value;
+      productFilter.innerHTML = '<option value="">Todos los productos</option>';
+
+      allProducts.forEach((product) => {
+        const option = document.createElement("option");
+        option.value = product.id;
+        option.textContent = product.modelo;
+        productFilter.appendChild(option);
+      });
+
+      productFilter.value = currentValue;
+    }
+
+    // Cargar ventas
+    async function loadSales() {
+      showLoading();
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        window.location.href = "/login";
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/sales/list.php`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (data.status === 200 && data.data) {
+          allSales = data.data;
+          renderSales(allSales);
+        } else if (response.status === 401) {
+          localStorage.clear();
+          window.location.href = "/login";
+        } else {
+          throw new Error(data.message || "Error desconocido");
+        }
+      } catch (error) {
+        console.error("Error cargando ventas:", error);
+        showError();
+      }
+    }
+
+    // Renderizar ventas
+    function renderSales(sales) {
+      if (!sales || sales.length === 0) {
+        showEmpty();
+        return;
+      }
+
+      salesTbody.innerHTML = "";
+
+      sales.forEach((sale) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+                <td>${sale.fecha_venta || "N/A"}</td>
+                <td>${sale.numero_factura || "N/A"}</td>
+                <td>${sale.modelo_producto || sale.desc_producto || "N/A"}</td>
+                <td>${sale.numero_serie || "N/A"}</td>
+                <td><span class="status-badge status-${(sale.estado || "pendiente").toLowerCase()}">${sale.estado || "Pendiente"}</span></td>
+            `;
+        salesTbody.appendChild(row);
+      });
+
+      showTable();
+    }
+
+    // Filtrar ventas
+    function filterSales() {
+      const search = searchInput.value.toLowerCase();
+      const productId = productFilter.value;
+
+      let filtered = allSales;
+
+      if (search) {
+        filtered = filtered.filter(
+          (sale) =>
+            (sale.numero_factura || "").toLowerCase().includes(search) ||
+            (sale.numero_serie || "").toLowerCase().includes(search),
+        );
+      }
+
+      if (productId) {
+        filtered = filtered.filter(
+          (sale) => String(sale.producto_id) === String(productId),
+        );
+      }
+
+      renderSales(filtered);
+    }
+
+    // Event listeners
+    if (retryBtn) {
+      retryBtn.addEventListener("click", loadSales);
+    }
+
+    if (filterBtn) {
+      filterBtn.addEventListener("click", filterSales);
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener("keyup", (e) => {
+        if (e.key === "Enter") filterSales();
+      });
+    }
+
+    // Inicializar
+    loadProducts();
+    loadSales();
+  })();
 </script>
