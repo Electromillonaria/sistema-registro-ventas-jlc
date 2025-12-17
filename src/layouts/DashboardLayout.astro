@@ -1,4 +1,7 @@
 ---
+import Sidebar from "../components/dashboard/Sidebar.astro";
+import Dark from "../components/icons/Dark.astro";
+import Light from "../components/icons/Light.astro";
 import "../styles/index.css";
 
 interface Props {
@@ -12,227 +15,168 @@ const { title } = Astro.props;
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
+    <meta name="description" content="Sistema de Registro de Ventas JLC" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>{title} | Dashboard JLC</title>
+    <meta name="generator" content={Astro.generator} />
+    <title>{title} | JLC Ventas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
   </head>
   <body>
-    <div id="app" class="dashboard-container" style="display: none;">
-      <!-- Oculto hasta verificar auth -->
-
-      <!-- Sidebar -->
-      <aside class="sidebar">
-        <div class="sidebar-header">
-          <h2 class="brand">JLC Ventas</h2>
-        </div>
-
-        <nav class="sidebar-nav">
-          <a href="/dashboard" class="nav-link active">
-            <span class="icon">📊</span> Resumen
-          </a>
-          <a href="/ventas/nueva" class="nav-link">
-            <span class="icon">➕</span> Nueva Venta
-          </a>
-          <a href="/ventas/historial" class="nav-link">
-            <span class="icon">📋</span> Historial
-          </a>
-        </nav>
-
-        <div class="sidebar-footer">
-          <button id="logoutBtn" class="nav-link logout-btn">
-            <span class="icon">🚪</span> Cerrar Sesión
+    <div class="dashboard-layout">
+      <Sidebar />
+      <main class="dashboard-content">
+        <header class="dashboard-header">
+          <h1 class="page-title">{title}</h1>
+          <button
+            id="theme-toggle"
+            class="theme-toggle-btn"
+            title="Toggle theme"
+          >
+            <Dark />
+            <Light />
           </button>
-        </div>
-      </aside>
-
-      <!-- Main Content -->
-      <main class="main-content">
-        <header class="top-header">
-          <div class="user-info">
-            <span class="user-name" id="userName">Cargando...</span>
-            <span class="user-role" id="userRole">...</span>
-          </div>
         </header>
-
-        <div class="content-wrapper">
-          <slot />
-        </div>
+        <slot />
       </main>
     </div>
-
-    <!-- Script de Protección y UI -->
-    <script is:inline>
-      // 1. Verificar Autenticación
-      const token = localStorage.getItem("token");
-      const userStr = localStorage.getItem("user");
-
-      if (!token || !userStr) {
-        window.location.href = "/login";
-      } else {
-        // Auth OK: Mostrar App y cargar datos usuario
-        const app = document.getElementById("app");
-        if (app) app.style.display = "flex";
-
-        try {
-          const user = JSON.parse(userStr);
-          const nameEl = document.getElementById("userName");
-          const roleEl = document.getElementById("userRole");
-
-          if (nameEl)
-            nameEl.textContent = `${user.nombre} ${user.apellido || ""}`;
-          if (roleEl)
-            roleEl.textContent =
-              user.rol === "administrador"
-                ? "Administrador"
-                : "Asesor Comercial";
-        } catch (e) {
-          console.error("Error parsing user data");
-          localStorage.clear();
-          window.location.href = "/login";
-        }
-      }
-
-      // 2. Manejar Logout
-      const logoutBtn = document.getElementById("logoutBtn");
-      if (logoutBtn) {
-        logoutBtn.addEventListener("click", () => {
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
-          window.location.href = "/login";
-        });
-      }
-    </script>
   </body>
 </html>
 
 <style>
-  .dashboard-container {
+  .dashboard-layout {
     display: flex;
     min-height: 100vh;
     background-color: var(--color-bg-main);
+    transition: background-color 0.3s ease;
   }
 
-  /* Sidebar */
-  .sidebar {
-    width: 260px;
-    background-color: var(--color-bg-card);
-    border-right: 1px solid var(--color-border);
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    height: 100vh;
-    left: 0;
-    top: 0;
-  }
-
-  .sidebar-header {
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--color-border);
-  }
-
-  .brand {
-    color: var(--color-accent);
-    font-size: 1.5rem;
-    font-weight: 700;
-  }
-
-  .sidebar-nav {
-    padding: 1.5rem 1rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .nav-link {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    color: var(--color-text-secondary);
-    text-decoration: none;
-    border-radius: var(--radius-md);
-    transition: all 0.2s;
-    background: none;
-    border: none;
-    font-size: 1rem;
-    width: 100%;
-    cursor: pointer;
-    text-align: left;
-  }
-
-  .nav-link:hover,
-  .nav-link.active {
-    background-color: rgba(66, 153, 225, 0.1);
-    color: var(--color-accent);
-  }
-
-  .sidebar-footer {
-    padding: 1.5rem;
-    border-top: 1px solid var(--color-border);
-  }
-
-  .logout-btn:hover {
-    background-color: rgba(229, 62, 62, 0.1);
-    color: #fc8181;
-  }
-
-  /* Main Content */
-  .main-content {
-    flex: 1;
-    margin-left: 260px; /* Ancho del sidebar */
-    display: flex;
-    flex-direction: column;
-  }
-
-  .top-header {
-    height: 64px;
-    background-color: var(--color-bg-card);
-    border-bottom: 1px solid var(--color-border);
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding: 0 2rem;
-  }
-
-  .user-info {
-    display: flex;
-    flex-direction: column;
-    text-align: right;
-  }
-
-  .user-name {
-    color: var(--color-text-main);
-    font-weight: 600;
-    font-size: 0.95rem;
-  }
-
-  .user-role {
-    color: var(--color-text-secondary);
-    font-size: 0.8rem;
-  }
-
-  .content-wrapper {
+  .dashboard-content {
+    flex-grow: 1;
     padding: 2rem;
+    overflow-y: auto;
   }
 
-  /* Responsive */
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  .page-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--color-text-main);
+  }
+  .theme-toggle-btn {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 9999px;
+    padding: 0.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-secondary);
+    transition: all 0.3s ease;
+  }
+  .theme-toggle-btn:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+  .toggle-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
   @media (max-width: 768px) {
-    .sidebar {
-      transform: translateX(-100%);
-      transition: transform 0.3s;
-      z-index: 50;
+    .dashboard-layout {
+      flex-direction: column;
     }
-
-    .main-content {
-      margin-left: 0;
+    .dashboard-content {
+      padding: 1rem;
     }
-
-    /* Aquí faltaría lógica para un botón de menú hamburguesa móvil, 
-       pero por ahora lo dejamos básico */
+    .page-title {
+      font-size: 1.5rem;
+    }
   }
 </style>
+
+<script is:inline>
+  // 🔒 AUTHENTICATION GUARD - Protege rutas del dashboard
+  (function () {
+    const token = localStorage.getItem("token");
+    const userStr = localStorage.getItem("user");
+
+    if (!token || !userStr) {
+      // Sin token = redirigir al login
+      window.location.href = "/login";
+      return;
+    }
+
+    try {
+      const user = JSON.parse(userStr);
+      // Verificar que el objeto user tenga datos válidos
+      if (!user.id || !user.nombre) {
+        throw new Error("Invalid user data");
+      }
+    } catch (e) {
+      console.error("Error parsing user data:", e);
+      localStorage.clear();
+      window.location.href = "/login";
+    }
+  })();
+</script>
+
+<script is:inline>
+  function themeSetup() {
+    const themeToggleBtn = document.getElementById("theme-toggle");
+    if (!themeToggleBtn) return;
+
+    const darkIcon = document.getElementById("theme-toggle-dark-icon");
+    const lightIcon = document.getElementById("theme-toggle-light-icon");
+    const docElement = document.documentElement;
+
+    const applyTheme = (theme) => {
+      if (theme === "light") {
+        docElement.setAttribute("data-theme", "light");
+        if (darkIcon) darkIcon.style.display = "block";
+        if (lightIcon) lightIcon.style.display = "none";
+      } else {
+        docElement.removeAttribute("data-theme");
+        if (darkIcon) darkIcon.style.display = "none";
+        if (lightIcon) lightIcon.style.display = "block";
+      }
+    };
+
+    const toggleTheme = () => {
+      const currentThemeIsLight = docElement.hasAttribute("data-theme");
+      const newTheme = currentThemeIsLight ? "dark" : "light";
+      localStorage.setItem("theme", newTheme);
+      applyTheme(newTheme);
+    };
+
+    themeToggleBtn.addEventListener("click", toggleTheme);
+
+    // Initial load
+    const savedTheme = localStorage.getItem("theme");
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+    if (savedTheme) {
+      applyTheme(savedTheme);
+    } else {
+      applyTheme(prefersDark ? "dark" : "light");
+    }
+  }
+
+  document.addEventListener("astro:page-load", themeSetup);
+  // astro:page-load is usually sufficient, but running it directly helps with initial view transitions.
+  themeSetup();
+</script>

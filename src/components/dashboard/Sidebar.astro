@@ -1,0 +1,210 @@
+---
+import Logo from "../Logo.astro";
+---
+
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <Logo />
+  </div>
+
+  <div class="user-profile">
+    <img src="" alt="User Avatar" class="avatar" />
+    <div class="user-info">
+      <span class="user-name">Nombre Prueba</span>
+      <span class="user-role">Asesor</span>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a href="/dashboard" class="nav-link active">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"
+        ><path
+          d="M12.75 3.03a.75.75 0 00-1.5 0v1.5h-1.5a.75.75 0 000 1.5h1.5v1.5a.75.75 0 001.5 0v-1.5h1.5a.75.75 0 000-1.5h-1.5v-1.5zM3.75 9.75A.75.75 0 003 10.5v9A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 19.5v-9a.75.75 0 00-1.5 0v9a.75.75 0 01-.75.75H5.25a.75.75 0 01-.75-.75v-9a.75.75 0 00-.75-.75zM21 7.5a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 7.5v1.5a.75.75 0 001.5 0v-1.5a.75.75 0 01.75-.75h13.5a.75.75 0 01.75.75v1.5a.75.75 0 001.5 0v-1.5z"
+        ></path></svg
+      >
+      <span>Registra tu Venta</span>
+    </a>
+    <a href="/dashboard/ventas" class="nav-link">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"
+        ><path
+          fill-rule="evenodd"
+          d="M3.75 3A2.75 2.75 0 001 5.75v12.5A2.75 2.75 0 003.75 21h16.5A2.75 2.75 0 0023 18.25V5.75A2.75 2.75 0 0020.25 3H3.75zm.75 9.75a.75.75 0 01.75-.75h13.5a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75zm0 4.5a.75.75 0 01.75-.75h13.5a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75zM5.25 6a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z"
+          clip-rule="evenodd"></path></svg
+      >
+      <span>Ver Ventas</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a href="/" class="nav-link logout">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"
+        ><path
+          fill-rule="evenodd"
+          d="M7.5 3.75A1.5 1.5 0 006 5.25v13.5a1.5 1.5 0 001.5 1.5h6a1.5 1.5 0 001.5-1.5V15a.75.75 0 011.5 0v3.75a3 3 0 01-3 3h-6a3 3 0 01-3-3V5.25a3 3 0 013-3h6a3 3 0 013 3V9a.75.75 0 01-1.5 0V5.25a1.5 1.5 0 00-1.5-1.5h-6zm10.72 4.72a.75.75 0 011.06 0l3 3a.75.75 0 010 1.06l-3 3a.75.75 0 11-1.06-1.06l1.72-1.72H9a.75.75 0 010-1.5h10.94l-1.72-1.72a.75.75 0 010-1.06z"
+          clip-rule="evenodd"></path></svg
+      >
+      <span>Cerrar Sesión</span>
+    </a>
+  </div>
+</aside>
+
+<script is:inline>
+  // Cargar datos del usuario desde localStorage
+  (function () {
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        const userNameEl = document.querySelector(".user-name");
+        const userRoleEl = document.querySelector(".user-role");
+
+        if (userNameEl) {
+          userNameEl.textContent =
+            `${user.nombre} ${user.apellido || ""}`.trim();
+        }
+        if (userRoleEl) {
+          userRoleEl.textContent =
+            user.rol === "administrador" ? "Administrador" : "Asesor";
+        }
+      } catch (e) {
+        console.error("Error loading user data:", e);
+      }
+    }
+
+    // Manejar logout
+    const logoutBtn = document.querySelector(".logout");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "/login";
+      });
+    }
+  })();
+</script>
+
+<style>
+  .sidebar {
+    width: 260px;
+    background-color: var(--color-bg-card);
+    border-right: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    flex-shrink: 0;
+  }
+  .sidebar-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-top: 1rem;
+  }
+  .sidebar-header .logo {
+    /* Assuming Logo has a class */
+    height: 40px;
+  }
+  .user-profile {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-lg);
+  }
+  .avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .user-info {
+    display: flex;
+    flex-direction: column;
+  }
+  .user-name {
+    font-weight: 600;
+    color: var(--color-text-main);
+  }
+  .user-role {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+  }
+
+  .sidebar-nav {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    color: var(--color-text-secondary);
+    font-weight: 500;
+    transition:
+      background-color 0.2s,
+      color 0.2s;
+    gap: 0.875rem;
+  }
+  .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--color-text-main);
+    text-decoration: none;
+  }
+  .nav-link.active {
+    background-color: var(--color-accent);
+    color: var(--color-accent-text);
+    font-weight: 600;
+  }
+  .nav-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .sidebar-footer {
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .logout {
+    color: #e57373; /* A soft red for logout */
+  }
+
+  .logout:hover {
+    background-color: rgba(229, 115, 115, 0.1);
+    color: #ef9a9a;
+  }
+
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 100%;
+      border-right: none;
+      border-bottom: 1px solid var(--color-border);
+      flex-direction: row;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      justify-content: space-between;
+    }
+    .sidebar-header,
+    .user-profile,
+    .sidebar-footer {
+      display: none; /* Hide for a simpler mobile view */
+    }
+    .sidebar-nav {
+      flex-direction: row;
+      flex-grow: 0;
+      gap: 0.5rem;
+    }
+    .nav-link span {
+      display: none; /* Hide text on mobile */
+    }
+    .nav-link {
+      padding: 0.75rem;
+    }
+  }
+</style>

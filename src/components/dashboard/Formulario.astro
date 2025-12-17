@@ -1,0 +1,209 @@
+---
+import Card from "../Card.astro";
+import Button from "../Button.astro";
+---
+
+<Card title="Registrar Nueva Venta">
+  <form class="sale-form">
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="numero_factura" class="form-label">N° de Factura</label>
+        <input
+          type="text"
+          id="numero_factura"
+          name="numero_factura"
+          class="form-input"
+          placeholder="Ej: FCT-001234"
+        />
+      </div>
+      <div class="form-group">
+        <label for="foto_factura" class="form-label">Foto de Factura</label>
+        <input
+          type="file"
+          id="foto_factura"
+          name="foto_factura"
+          class="form-input file-input"
+          accept=".jpg, .png, .pdf"
+        />
+        <p class="form-helper-text">Formatos: JPG, PNG, PDF (Máx 5MB)</p>
+      </div>
+      <div class="form-group">
+        <label for="producto_jlc" class="form-label">Producto JLC</label>
+        <select
+          id="producto_jlc"
+          name="producto_jlc"
+          class="form-input"
+          required
+        >
+          <option value="">Cargando productos...</option>
+        </select>
+        <p
+          class="form-helper-text error-text"
+          id="product-error"
+          style="display: none;"
+        >
+          Error cargando lista de productos
+        </p>
+      </div>
+      <div class="form-group">
+        <label for="numero_serie" class="form-label">N° de Serie</label>
+        <input
+          type="text"
+          id="numero_serie"
+          name="numero_serie"
+          class="form-input"
+          placeholder="Ej: SN-XYZ-7890"
+        />
+        <p class="form-helper-text warning-text">
+          El número de serie debe ingresarse exactamente como aparece en el
+          producto. Cualquier variación invalidará la redención del bono.
+        </p>
+      </div>
+      <div class="form-group">
+        <label for="fecha_venta" class="form-label">Fecha de Venta</label>
+        <input
+          type="date"
+          id="fecha_venta"
+          name="fecha_venta"
+          class="form-input"
+        />
+      </div>
+    </div>
+    <div class="form-actions">
+      <Button type="reset" variant="outline">Cancelar</Button>
+      <Button type="submit" variant="primary">Registrar Venta</Button>
+    </div>
+  </form>
+</Card>
+
+<style>
+  .sale-form {
+    display: flex;
+    flex-direction: column;
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  /* Styling for select input */
+  select.form-input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+  }
+
+  /* File input specific styles */
+  .file-input {
+    padding-top: 0.75rem; /* Adjust padding for file input */
+    padding-bottom: 0.75rem;
+  }
+
+  .form-helper-text {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    margin-top: 0.25rem;
+  }
+
+  .warning-text {
+    color: #f6ad55; /* A subtle orange/yellow for warnings */
+    font-weight: 500;
+  }
+
+  .error-text {
+    color: #e57373;
+    font-weight: 500;
+  }
+</style>
+
+<script is:inline>
+  // Cargar productos dinámicamente
+  (function () {
+    const productSelect = document.getElementById("producto_jlc");
+    const productError = document.getElementById("product-error");
+
+    fetch("http://localhost:8000/products/list.php")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === 200 && data.data) {
+          productSelect.innerHTML =
+            '<option value="">Seleccionar Producto</option>';
+          data.data.forEach((product) => {
+            const option = document.createElement("option");
+            option.value = product.id;
+            option.textContent = `${product.modelo} - ${product.descripcion}`;
+            productSelect.appendChild(option);
+          });
+        } else {
+          throw new Error("Error en respuesta");
+        }
+      })
+      .catch((err) => {
+        console.error("Error cargando productos:", err);
+        productSelect.innerHTML = '<option value="">Error al cargar</option>';
+        productError.style.display = "block";
+      });
+
+    // Manejar envío del formulario
+    const form = document.querySelector(".sale-form");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        alert("Sesión expirada. Por favor inicia sesión nuevamente.");
+        window.location.href = "/login";
+        return;
+      }
+
+      const data = {
+        numero_factura: formData.get("numero_factura"),
+        producto_id: formData.get("producto_jlc"),
+        numero_serie: formData.get("numero_serie"),
+        fecha_venta: formData.get("fecha_venta"),
+        foto_factura: "", // TODO: Implementar upload de archivos
+      };
+
+      try {
+        const response = await fetch("http://localhost:8000/sales/create.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+
+        if (result.status === 201) {
+          alert("¡Venta registrada exitosamente!");
+          form.reset();
+          // Opcional: redirigir a historial
+          // window.location.href = '/dashboard/ventas';
+        } else {
+          alert(result.message || "Error al registrar la venta");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Error de conexión. Intenta nuevamente.");
+      }
+    });
+  })();
+</script>
