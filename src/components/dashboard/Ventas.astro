@@ -25,6 +25,22 @@ import Button from "../Button.astro";
           <option value="">Todos los productos</option>
         </select>
       </div>
+      <div class="form-group">
+        <input
+          type="date"
+          id="fecha-desde"
+          class="form-input"
+          placeholder="Fecha desde"
+        />
+      </div>
+      <div class="form-group">
+        <input
+          type="date"
+          id="fecha-hasta"
+          class="form-input"
+          placeholder="Fecha hasta"
+        />
+      </div>
       <Button variant="outline" id="filter-btn">Filtrar</Button>
     </div>
   </div>
@@ -246,6 +262,8 @@ import Button from "../Button.astro";
     const filterBtn = document.getElementById("filter-btn");
     const searchInput = document.getElementById("search");
     const productFilter = document.getElementById("filtro-producto");
+    const fechaDesde = document.getElementById("fecha-desde");
+    const fechaHasta = document.getElementById("fecha-hasta");
 
     // Funciones de estado
     function showLoading() {
@@ -401,9 +419,12 @@ import Button from "../Button.astro";
     function filterSales() {
       const search = searchInput.value.toLowerCase();
       const productId = productFilter.value;
+      const dateFrom = fechaDesde.value;
+      const dateTo = fechaHasta.value;
 
       let filtered = allSales;
 
+      // Filtro por búsqueda (factura o serie)
       if (search) {
         filtered = filtered.filter(
           (sale) =>
@@ -412,10 +433,34 @@ import Button from "../Button.astro";
         );
       }
 
+      // Filtro por producto
       if (productId) {
         filtered = filtered.filter(
           (sale) => String(sale.producto_id) === String(productId),
         );
+      }
+
+      // Filtro por rango de fechas
+      if (dateFrom || dateTo) {
+        filtered = filtered.filter((sale) => {
+          if (!sale.fecha_venta) return false;
+
+          const saleDate = new Date(sale.fecha_venta);
+
+          if (dateFrom) {
+            const fromDate = new Date(dateFrom);
+            if (saleDate < fromDate) return false;
+          }
+
+          if (dateTo) {
+            const toDate = new Date(dateTo);
+            // Agregar un día para incluir toda la fecha "hasta"
+            toDate.setDate(toDate.getDate() + 1);
+            if (saleDate >= toDate) return false;
+          }
+
+          return true;
+        });
       }
 
       renderSales(filtered);
@@ -430,10 +475,23 @@ import Button from "../Button.astro";
       filterBtn.addEventListener("click", filterSales);
     }
 
+    // Búsqueda en tiempo real mientras se escribe
     if (searchInput) {
-      searchInput.addEventListener("keyup", (e) => {
-        if (e.key === "Enter") filterSales();
-      });
+      searchInput.addEventListener("input", filterSales);
+    }
+
+    // Filtrar automáticamente al cambiar producto
+    if (productFilter) {
+      productFilter.addEventListener("change", filterSales);
+    }
+
+    // Filtrar automáticamente al cambiar fechas
+    if (fechaDesde) {
+      fechaDesde.addEventListener("change", filterSales);
+    }
+
+    if (fechaHasta) {
+      fechaHasta.addEventListener("change", filterSales);
     }
 
     // Inicializar
