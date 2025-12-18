@@ -25,8 +25,11 @@ import Button from "../Button.astro";
           name="foto_factura"
           class="form-input file-input"
           accept=".jpg,.jpeg,.png,.pdf"
+          required
         />
-        <p class="form-helper-text">Formatos: JPG, PNG, PDF (Máx 5MB)</p>
+        <p class="form-helper-text">
+          Formatos: JPG, PNG, PDF (Máx 5MB) - Obligatorio
+        </p>
         <div id="file-preview" class="file-preview" style="display: none;">
           <img id="preview-image" src="" alt="Preview" style="display: none;" />
           <p id="preview-filename"></p>

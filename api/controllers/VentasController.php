@@ -14,8 +14,9 @@ class VentasController {
         // Validar campos requeridos
         if (!isset($data['asesor_id']) || !isset($data['numero_factura']) || 
             !isset($data['producto_id']) || !isset($data['numero_serie']) || 
-            !isset($data['fecha_venta'])) {
-            return ['status' => 400, 'message' => 'Faltan datos requeridos'];
+            !isset($data['fecha_venta']) || !isset($data['foto_factura']) || 
+            empty($data['foto_factura'])) {
+            return ['status' => 400, 'message' => 'Faltan datos requeridos. La foto de factura es obligatoria.'];
         }
 
         try {
@@ -33,7 +34,7 @@ class VentasController {
             $stmt->execute([
                 ':asesor_id' => $data['asesor_id'],
                 ':numero_factura' => $data['numero_factura'],
-                ':foto_factura' => $data['foto_factura'] ?? '',
+                ':foto_factura' => $data['foto_factura'],
                 ':producto_id' => $data['producto_id'],
                 ':numero_serie' => $data['numero_serie'],
                 ':fecha_venta' => $data['fecha_venta']
