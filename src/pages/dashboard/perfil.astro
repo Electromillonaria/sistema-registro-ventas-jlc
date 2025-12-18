@@ -27,31 +27,31 @@ import Card from "../../components/Card.astro";
       <Card title="Información Personal">
         <div class="info-grid">
           <div class="info-field">
-            <label>Nombre Completo</label>
+            <span class="field-label">Nombre Completo</span>
             <p id="nombre-completo">-</p>
           </div>
           <div class="info-field">
-            <label>Tipo de Documento</label>
+            <span class="field-label">Tipo de Documento</span>
             <p id="tipo-documento">-</p>
           </div>
           <div class="info-field">
-            <label>Número de Documento</label>
+            <span class="field-label">Número de Documento</span>
             <p id="numero-documento">-</p>
           </div>
           <div class="info-field">
-            <label>Cédula</label>
+            <span class="field-label">Cédula</span>
             <p id="cedula">-</p>
           </div>
           <div class="info-field">
-            <label>Fecha de Nacimiento</label>
+            <span class="field-label">Fecha de Nacimiento</span>
             <p id="fecha-nacimiento">-</p>
           </div>
           <div class="info-field">
-            <label>Ciudad de Residencia</label>
+            <span class="field-label">Ciudad de Residencia</span>
             <p id="ciudad-residencia">-</p>
           </div>
           <div class="info-field">
-            <label>Departamento</label>
+            <span class="field-label">Departamento</span>
             <p id="departamento">-</p>
           </div>
         </div>
@@ -61,15 +61,15 @@ import Card from "../../components/Card.astro";
       <Card title="Información de Contacto">
         <div class="info-grid">
           <div class="info-field">
-            <label>Correo Electrónico</label>
+            <span class="field-label">Correo Electrónico</span>
             <p id="correo">-</p>
           </div>
           <div class="info-field">
-            <label>WhatsApp</label>
+            <span class="field-label">WhatsApp</span>
             <p id="whatsapp">-</p>
           </div>
           <div class="info-field">
-            <label>Teléfono</label>
+            <span class="field-label">Teléfono</span>
             <p id="telefono">-</p>
           </div>
         </div>
@@ -79,23 +79,23 @@ import Card from "../../components/Card.astro";
       <Card title="Información Laboral">
         <div class="info-grid">
           <div class="info-field">
-            <label>Distribuidor</label>
+            <span class="field-label">Distribuidor</span>
             <p id="nombre-distribuidor">-</p>
           </div>
           <div class="info-field">
-            <label>Ciudad del Punto de Venta</label>
+            <span class="field-label">Ciudad del Punto de Venta</span>
             <p id="ciudad-punto-venta">-</p>
           </div>
           <div class="info-field full-width">
-            <label>Dirección del Punto de Venta</label>
+            <span class="field-label">Dirección del Punto de Venta</span>
             <p id="direccion-punto-venta">-</p>
           </div>
           <div class="info-field">
-            <label>Cargo</label>
+            <span class="field-label">Cargo</span>
             <p id="cargo">-</p>
           </div>
           <div class="info-field">
-            <label>Antigüedad</label>
+            <span class="field-label">Antigüedad</span>
             <p id="antiguedad">-</p>
           </div>
         </div>
@@ -105,23 +105,23 @@ import Card from "../../components/Card.astro";
       <Card title="Datos de Cuenta">
         <div class="info-grid">
           <div class="info-field">
-            <label>Rol</label>
+            <span class="field-label">Rol</span>
             <p id="rol" class="badge">-</p>
           </div>
           <div class="info-field">
-            <label>Estado de Cuenta</label>
+            <span class="field-label">Estado de Cuenta</span>
             <p id="estado-cuenta" class="badge">-</p>
           </div>
           <div class="info-field">
-            <label>Método de Pago Preferido</label>
+            <span class="field-label">Método de Pago Preferido</span>
             <p id="metodo-pago">-</p>
           </div>
           <div class="info-field">
-            <label>Llave BREB</label>
+            <span class="field-label">Llave BREB</span>
             <p id="llave-breb">-</p>
           </div>
           <div class="info-field">
-            <label>Fecha de Registro</label>
+            <span class="field-label">Fecha de Registro</span>
             <p id="fecha-registro">-</p>
           </div>
         </div>
@@ -205,7 +205,7 @@ import Card from "../../components/Card.astro";
     grid-column: 1 / -1;
   }
 
-  .info-field label {
+  .info-field .field-label {
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
