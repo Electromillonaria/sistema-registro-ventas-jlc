@@ -11,6 +11,7 @@ const {
   variant = "primary",
   class: className,
   type = "button",
+  ...rest
 } = Astro.props;
 
 const Element = href ? "a" : "button";
@@ -20,6 +21,7 @@ const Element = href ? "a" : "button";
   href={href}
   type={!href ? type : undefined}
   class:list={["btn", `btn-${variant}`, className]}
+  {...rest}
 >
   <slot />
 </Element>

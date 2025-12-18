@@ -10,11 +10,13 @@ try {
     $db = Database::getInstance();
     $conn = $db->getConnection();
 
-    // Consulta - Obtener ventas del usuario autenticado
+    // Consulta - Obtener ventas del usuario autenticado con detalles de producto y usuario
     $sql = "SELECT v.id, v.numero_factura, v.fecha_venta, v.estado, v.numero_serie, v.producto_id, v.foto_factura,
-                   p.modelo as modelo_producto, p.descripcion as desc_producto
+                   p.modelo as modelo_producto, p.descripcion as desc_producto,
+                   u.nombre as nombre_asesor, u.apellido as apellido_asesor, u.cedula as cedula_asesor, u.nombre_distribuidor
             FROM ventas v
             JOIN productos_jlc p ON v.producto_id = p.id
+            JOIN usuarios u ON v.asesor_id = u.id
             WHERE v.asesor_id = :asesor_id
             ORDER BY v.fecha_venta DESC, v.created_at DESC";
 

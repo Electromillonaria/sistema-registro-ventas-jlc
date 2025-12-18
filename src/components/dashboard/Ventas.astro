@@ -63,6 +63,8 @@ import Button from "../Button.astro";
           <th>N° Factura</th>
           <th>Producto</th>
           <th>N° Serie</th>
+          <th>Asesor</th>
+          <th>Distribuidor</th>
           <th>Estado</th>
           <th>Foto</th>
         </tr>
@@ -364,6 +366,11 @@ import Button from "../Button.astro";
                 <td>${sale.numero_factura || "N/A"}</td>
                 <td>${sale.modelo_producto || sale.desc_producto || "N/A"}</td>
                 <td>${sale.numero_serie || "N/A"}</td>
+                <td>
+                  <div style="font-weight:500">${sale.nombre_asesor || ""} ${sale.apellido_asesor || ""}</div>
+                  <div style="font-size:0.75rem;color:var(--color-text-secondary)">CC: ${sale.cedula_asesor || "N/A"}</div>
+                </td>
+                <td>${sale.nombre_distribuidor || "N/A"}</td>
                 <td><span class="status-badge status-${(sale.estado || "pendiente").toLowerCase()}">${sale.estado || "Pendiente"}</span></td>
                 <td>${photoBtn}</td>
             `;
