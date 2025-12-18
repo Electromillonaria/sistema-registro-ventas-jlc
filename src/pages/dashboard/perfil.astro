@@ -1,0 +1,372 @@
+---
+import DashboardLayout from "../../layouts/DashboardLayout.astro";
+import Card from "../../components/Card.astro";
+---
+
+<DashboardLayout title="Mi Perfil">
+  <div class="profile-container">
+    <div class="profile-header">
+      <h1>Mi Perfil</h1>
+      <p class="subtitle">Información personal y laboral</p>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading-state" class="state-message">
+      <div class="spinner"></div>
+      <p>Cargando perfil...</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="error-state" class="state-message" style="display: none;">
+      <p class="error-text">Error al cargar el perfil</p>
+    </div>
+
+    <!-- Profile Content -->
+    <div id="profile-content" class="profile-grid" style="display: none;">
+      <!-- Información Personal -->
+      <Card title="Información Personal">
+        <div class="info-grid">
+          <div class="info-field">
+            <label>Nombre Completo</label>
+            <p id="nombre-completo">-</p>
+          </div>
+          <div class="info-field">
+            <label>Tipo de Documento</label>
+            <p id="tipo-documento">-</p>
+          </div>
+          <div class="info-field">
+            <label>Número de Documento</label>
+            <p id="numero-documento">-</p>
+          </div>
+          <div class="info-field">
+            <label>Cédula</label>
+            <p id="cedula">-</p>
+          </div>
+          <div class="info-field">
+            <label>Fecha de Nacimiento</label>
+            <p id="fecha-nacimiento">-</p>
+          </div>
+          <div class="info-field">
+            <label>Ciudad de Residencia</label>
+            <p id="ciudad-residencia">-</p>
+          </div>
+          <div class="info-field">
+            <label>Departamento</label>
+            <p id="departamento">-</p>
+          </div>
+        </div>
+      </Card>
+
+      <!-- Información de Contacto -->
+      <Card title="Información de Contacto">
+        <div class="info-grid">
+          <div class="info-field">
+            <label>Correo Electrónico</label>
+            <p id="correo">-</p>
+          </div>
+          <div class="info-field">
+            <label>WhatsApp</label>
+            <p id="whatsapp">-</p>
+          </div>
+          <div class="info-field">
+            <label>Teléfono</label>
+            <p id="telefono">-</p>
+          </div>
+        </div>
+      </Card>
+
+      <!-- Información Laboral -->
+      <Card title="Información Laboral">
+        <div class="info-grid">
+          <div class="info-field">
+            <label>Distribuidor</label>
+            <p id="nombre-distribuidor">-</p>
+          </div>
+          <div class="info-field">
+            <label>Ciudad del Punto de Venta</label>
+            <p id="ciudad-punto-venta">-</p>
+          </div>
+          <div class="info-field full-width">
+            <label>Dirección del Punto de Venta</label>
+            <p id="direccion-punto-venta">-</p>
+          </div>
+          <div class="info-field">
+            <label>Cargo</label>
+            <p id="cargo">-</p>
+          </div>
+          <div class="info-field">
+            <label>Antigüedad</label>
+            <p id="antiguedad">-</p>
+          </div>
+        </div>
+      </Card>
+
+      <!-- Datos de Cuenta -->
+      <Card title="Datos de Cuenta">
+        <div class="info-grid">
+          <div class="info-field">
+            <label>Rol</label>
+            <p id="rol" class="badge">-</p>
+          </div>
+          <div class="info-field">
+            <label>Estado de Cuenta</label>
+            <p id="estado-cuenta" class="badge">-</p>
+          </div>
+          <div class="info-field">
+            <label>Método de Pago Preferido</label>
+            <p id="metodo-pago">-</p>
+          </div>
+          <div class="info-field">
+            <label>Llave BREB</label>
+            <p id="llave-breb">-</p>
+          </div>
+          <div class="info-field">
+            <label>Fecha de Registro</label>
+            <p id="fecha-registro">-</p>
+          </div>
+        </div>
+      </Card>
+    </div>
+  </div>
+</DashboardLayout>
+
+<style>
+  .profile-container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .profile-header {
+    margin-bottom: 2rem;
+  }
+
+  .profile-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-text-main);
+    margin: 0 0 0.5rem 0;
+  }
+
+  .subtitle {
+    color: var(--color-text-secondary);
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  .state-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .spinner {
+    border: 3px solid var(--color-border);
+    border-top-color: var(--color-accent);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .error-text {
+    color: #e57373;
+    font-weight: 500;
+  }
+
+  .profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .info-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .info-field.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .info-field label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-secondary);
+  }
+
+  .info-field p {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-text-main);
+    margin: 0;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    width: fit-content;
+  }
+
+  .badge.active {
+    background-color: rgba(56, 161, 105, 0.2);
+    color: #68d391;
+  }
+
+  .badge.inactive {
+    background-color: rgba(229, 62, 62, 0.2);
+    color: #fc8181;
+  }
+
+  .badge.admin {
+    background-color: rgba(159, 122, 234, 0.2);
+    color: #b794f6;
+  }
+
+  .badge.asesor {
+    background-color: rgba(66, 153, 225, 0.2);
+    color: #63b3ed;
+  }
+
+  @media (max-width: 768px) {
+    .profile-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .info-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    const API_BASE = "http://localhost:8000";
+
+    const loadingState = document.getElementById("loading-state");
+    const errorState = document.getElementById("error-state");
+    const profileContent = document.getElementById("profile-content");
+
+    async function loadProfile() {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        window.location.href = "/login";
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/user/profile.php`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (data.status === 200 && data.data) {
+          displayProfile(data.data);
+        } else if (response.status === 401) {
+          localStorage.clear();
+          window.location.href = "/login";
+        } else {
+          throw new Error(data.message || "Error al cargar perfil");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        showError();
+      }
+    }
+
+    function displayProfile(user) {
+      // Información Personal
+      document.getElementById("nombre-completo").textContent =
+        `${user.nombre || ""} ${user.apellido || ""}`.trim() || "-";
+      document.getElementById("tipo-documento").textContent =
+        user.tipo_documento || "-";
+      document.getElementById("numero-documento").textContent =
+        user.numero_documento || "-";
+      document.getElementById("cedula").textContent = user.cedula || "-";
+      document.getElementById("fecha-nacimiento").textContent =
+        user.fecha_nacimiento
+          ? new Date(user.fecha_nacimiento).toLocaleDateString("es-CO")
+          : "-";
+      document.getElementById("ciudad-residencia").textContent =
+        user.ciudad_residencia || "-";
+      document.getElementById("departamento").textContent =
+        user.departamento || "-";
+
+      // Información de Contacto
+      document.getElementById("correo").textContent = user.correo || "-";
+      document.getElementById("whatsapp").textContent = user.whatsapp || "-";
+      document.getElementById("telefono").textContent = user.telefono || "-";
+
+      // Información Laboral
+      document.getElementById("nombre-distribuidor").textContent =
+        user.nombre_distribuidor || "-";
+      document.getElementById("ciudad-punto-venta").textContent =
+        user.ciudad_punto_venta || "-";
+      document.getElementById("direccion-punto-venta").textContent =
+        user.direccion_punto_venta || "-";
+      document.getElementById("cargo").textContent = user.cargo || "-";
+      document.getElementById("antiguedad").textContent = user.antiguedad_meses
+        ? `${user.antiguedad_meses} meses`
+        : "-";
+
+      // Datos de Cuenta
+      const rolEl = document.getElementById("rol");
+      rolEl.textContent = user.rol || "-";
+      rolEl.classList.add(user.rol === "admin" ? "admin" : "asesor");
+
+      const estadoEl = document.getElementById("estado-cuenta");
+      estadoEl.textContent = user.activo ? "Activa" : "Inactiva";
+      estadoEl.classList.add(user.activo ? "active" : "inactive");
+
+      document.getElementById("metodo-pago").textContent =
+        user.metodo_pago_preferido || "-";
+      document.getElementById("llave-breb").textContent =
+        user.llave_breb || "-";
+      document.getElementById("fecha-registro").textContent = user.created_at
+        ? new Date(user.created_at).toLocaleDateString("es-CO")
+        : "-";
+
+      showProfile();
+    }
+
+    function showProfile() {
+      loadingState.style.display = "none";
+      errorState.style.display = "none";
+      profileContent.style.display = "grid";
+    }
+
+    function showError() {
+      loadingState.style.display = "none";
+      errorState.style.display = "flex";
+      profileContent.style.display = "none";
+    }
+
+    // Cargar perfil al iniciar
+    loadProfile();
+  })();
+</script>
