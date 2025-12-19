@@ -1,93 +1,139 @@
-# 🔐 Guía Rápida: Secretos de GitHub para Despliegue
+# Guía de Despliegue - Hostinger
 
-Esta es una lista de referencia rápida de todos los secretos que necesitas configurar en GitHub para que el despliegue automático funcione.
+## ✅ Archivos Modificados para Producción
 
-## Dónde configurar
+### Frontend (URLs Actualizadas)
+- ✅ `src/pages/login.astro` - Cambio de `localhost:8000` a `/api`
+- ✅ `src/pages/dashboard/perfil.astro` - API_BASE actualizado
+- ✅ `src/components/dashboard/Ventas.astro` - API_BASE actualizado
+- ✅ `src/components/dashboard/Formulario.astro` - API_BASE actualizado
 
-`Tu Repositorio → Settings → Secrets and variables → Actions → New repository secret`
-
----
-
-## Lista de Secretos Requeridos
-
-### 🌐 Credenciales FTP de Hostinger
-
-| Nombre del Secreto | Ejemplo de Valor | Dónde Obtenerlo |
-|-------------------|------------------|-----------------|
-| `FTP_SERVER` | `ftp.tudominio.com` | hPanel → Archivos → Cuentas FTP |
-| `FTP_USERNAME` | `u123456789` | hPanel → Archivos → Cuentas FTP |
-| `FTP_PASSWORD` | `tu_contraseña_ftp` | hPanel → Archivos → Cuentas FTP |
-
-### 🗄️ Base de Datos MySQL
-
-| Nombre del Secreto | Ejemplo de Valor | Dónde Obtenerlo |
-|-------------------|------------------|-----------------|
-| `DB_HOST` | `localhost` | hPanel → Bases de datos (usualmente localhost) |
-| `DB_NAME` | `u123456789_ventas_jlc` | hPanel → Bases de datos → Tu BD creada |
-| `DB_USER` | `u123456789_admin` | hPanel → Bases de datos → Usuario creado |
-| `DB_PASS` | `tu_contraseña_mysql` | La que definiste al crear el usuario |
-
-### 🚀 URLs de la Aplicación
-
-| Nombre del Secreto | Ejemplo de Valor | Notas |
-|-------------------|------------------|-------|
-| `APP_URL` | `https://ventas.ejemplo.com` | URL completa del subdominio |
-| `API_URL` | `https://ventas.ejemplo.com/api` | URL de tu API backend |
-| `PUBLIC_APP_URL` | `https://ventas.ejemplo.com` | Mismo valor que APP_URL |
-| `PUBLIC_API_URL` | `https://ventas.ejemplo.com/api` | Mismo valor que API_URL |
-
-###🔒 Seguridad
-
-| Nombre del Secreto | Ejemplo de Valor | Notas |
-|-------------------|------------------|-------|
-| `JWT_SECRET` | `tu_clave_secreta_aleatoria_64_chars` | [Genera aquí](https://generate-secret.vercel.app/64) |
-| `JWT_EXPIRATION` | `28800` | 8 horas en segundos |
-| `SETUP_SECRET` | `clave_secreta_instalacion_unica` | Para script de instalación inicial |
-
-### ⚙️ Configuración
-
-| Nombre del Secreto | Valor Recomendado | Notas |
-|-------------------|-------------------|-------|
-| `UPLOAD_MAX_SIZE` | `5242880` | 5MB en bytes |
+### Backend (Archivos de Infraestructura Creados)
+- ✅ `api/.htaccess` - Configuración Apache (CORS, seguridad, PHP)
+- ✅ `api/index.php` - Router central (health check)
 
 ---
 
-## 📝 Checklist de Configuración
+## 📋 Pasos para Configurar en Hostinger
 
-- [ ] Crear base de datos MySQL en hPanel
-- [ ] Crear usuario MySQL con todos los permisos
-- [ ] Configurar los secretos listados arriba (15 en total)
-- [ ] Verificar que el directorio `public_html/ventas/` existe
-- [ ] Verificar permisos del directorio `uploads/` (755)
-
----
-
-## 🚀 Activar Despliegue
-
-Una vez configurados todos los secretos:
+### 1. Verificar Base de Datos
 
 ```bash
-git checkout deploy
-git merge main
+# En Hostinger File Manager o SSH:
+# La base de datos DEBE estar en:
+/database/jlc_ventas.db
+
+# Permisos (IMPORTANTE):
+chmod 666 database/jlc_ventas.db
+chmod 777 database/
+```
+
+### 2. Verificar Extensión PHP SQLite
+
+**En cPanel de Hostinger:**
+1. Ir a `Software` → `Select PHP Version`
+2. Verificar que esté habilitada: `php-sqlite3` o `pdo_sqlite`
+3. Si no está, activarla manualmente
+
+### 3. Configurar Variable de Entorno (.env)
+
+**Crear/Editar `.env` en el servidor:**
+
+```env
+# Base de datos
+DB_PATH=/home/[TU_USUARIO]/public_html/ventas/database/jlc_ventas.db
+
+# JWT
+JWT_SECRET=[TU_SECRET_AQUI]
+
+# Upload
+UPLOAD_MAX_SIZE=5242880
+```
+
+> **IMPORTANTE:** Reemplaza [TU_USUARIO] con tu nombre de usuario de Hostinger
+
+### 4. Verificar Estructura de Directorios
+
+```
+public_html/ventas/
+├── api/
+│   ├── .htaccess         ← NUEVO
+│   ├── index.php         ← NUEVO
+│   ├── auth/
+│   ├── sales/
+│   ├── products/
+│   ├── uploads/
+│   ├── config/
+│   └── ...
+├── database/
+│   └── jlc_ventas.db     ← VERIFICAR QUE EXISTA
+├── uploads/
+│   └── facturas/
+├── .env                  ← CONFIGURAR
+└── [archivos de Astro build]
+```
+
+### 5. Pruebas de Endpoints
+
+**Health Check (debería retornar 200):**
+```
+https://ventas.jlc-electronics.com/api/
+https://ventas.jlc-electronics.com/api/index.php
+```
+
+**Login (debería retornar 401 o datos válidos, NO 500):**
+```
+POST https://ventas.jlc-electronics.com/api/auth/login.php
+```
+
+---
+
+## 🔍 Diagnóstico de Errores
+
+### Si ves Error 500:
+
+1. **Ver logs de PHP en Hostinger:**
+   - cPanel → `Errors` → `Error Log`
+
+2. **Causas comunes:**
+   - ❌ Base de datos no existe
+   - ❌ Permisos incorrectos en BD
+   - ❌ Extensión SQLite no habilitada
+   - ❌ Ruta en `.env` incorrecta
+
+### Si ves CORS Error:
+
+- Verificar que `api/.htaccess` se haya subido correctamente
+- Revisar que Apache tenga `mod_headers` habilitado
+
+### Si ves 404 en /api/auth/login.php:
+
+- Verificar que la estructura de directorios sea correcta
+- Verificar que FTP haya subido todos los archivos de `api/`
+
+---
+
+## 🚀 Después de Configurar
+
+**Comandos para commit:**
+
+```bash
+git add .
+git commit -m "fix: Configure production URLs and add deployment infrastructure"
 git push origin deploy
 ```
 
-Monitorea el progreso en: **GitHub → Actions → Desplegar a Hostinger**
+**GitHub → Hostinger sincronizará automáticamente vía FTP**
 
 ---
 
-## ⚠️ Troubleshooting Común
+## ✅ Checklist Final
 
-**"Context access might be invalid"** en GitHub Actions:
-- Normal, solo significa que GitHub no puede validar si el secreto existe
-- El workflow funcionará si configuraste los secretos correctamente
-
-**Despliegue falla en FTP:**
-- Verifica credenciales FTP
-- Confirma que el directorio remoto existe
-- Revisa que estés usando el servidor FTP correcto
-
-**API devuelve error 500:**
-- Verifica que el archivo `.env` se creó en el servidor
-- Revisa logs de PHP en hPanel
-- Confirma que la base de datos existe y las credenciales son correctas
+- [ ] Base de datos existe en `/database/jlc_ventas.db`
+- [ ] Permisos de BD son 666 (escritura)
+- [ ] Directorio `/database/` tiene permisos 777
+- [ ] PHP versión 7.4+ con SQLite habilitado
+- [ ] `.env` configurado con rutas absolutas
+- [ ] Archivos subidos vía Git/FTP
+- [ ] Login funciona sin error 500
+- [ ] CORS no da error en consola

@@ -247,7 +247,7 @@ import Button from "../Button.astro";
 
 <script is:inline>
   (function () {
-    const API_BASE = "http://localhost:8000";
+    const API_BASE = "/api";
 
     let allSales = [];
     let allProducts = [];
@@ -405,7 +405,7 @@ import Button from "../Button.astro";
             const token = localStorage.getItem("token");
             // Abrir visor seguro
             window.open(
-              `http://localhost:8000/sales/view_receipt.php?file=${filename}&token=${token}`,
+              `/api/sales/view_receipt.php?file=${filename}&token=${token}`,
               "_blank",
             );
           }

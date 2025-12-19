@@ -118,7 +118,7 @@ import Button from "../components/Button.astro";
       const data = Object.fromEntries(formData);
 
       try {
-        const response = await fetch("http://localhost:8000/auth/login.php", {
+        const response = await fetch("/api/auth/login.php", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
