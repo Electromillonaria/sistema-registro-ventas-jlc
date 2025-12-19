@@ -84,6 +84,10 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           
+          # Protocolo y Puerto
+          protocol: ftps  # Usar FTPS (FTP seguro) si Hostinger lo soporta
+          port: 21        # Puerto FTP estándar (cambiar a 22 si es SFTP)
+          
           # Desplegar desde el directorio preparado
           local-dir: ./deploy_temp/
           
@@ -93,6 +97,10 @@ jobs:
           
           # Configuración de sincronización
           dangerous-clean-slate: false
+          
+          # Configuración de conexión
+          timeout: 120000           # 2 minutos de timeout
+          log-level: verbose        # Logs detallados para debugging
 
       # 7. Verificación post-despliegue
       - name: Verificar despliegue
