@@ -87,10 +87,9 @@ jobs:
           # Desplegar desde el directorio preparado
           local-dir: ./deploy_temp/
           
-          # Directorio remoto en Hostinger (subdominio ventas.ejemplo.com)
-          # Para subdominios, el path es la raíz: /public_html/
-          # Si tu subdominio apunta a otra carpeta, ajústalo aquí
-          server-dir: /public_html/
+          # Directorio remoto en Hostinger
+          # Para subdominio ventas.jlc-electronics.com que apunta a public_html/ventas
+          server-dir: /public_html/ventas/
           
           # Configuración de sincronización
           dangerous-clean-slate: false
