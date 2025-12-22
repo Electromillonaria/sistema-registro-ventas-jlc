@@ -1,0 +1,99 @@
+---
+interface Props {
+  tableId?: string;
+  tbodyId?: string;
+}
+
+const { tableId = "sales-table", tbodyId = "sales-tbody" } = Astro.props;
+---
+
+<table class="sales-table" id={tableId} style="display: none;">
+  <thead>
+    <tr>
+      <th>Fecha</th>
+      <th>N° Factura</th>
+      <th>Producto</th>
+      <th>N° Serie</th>
+      <th>Asesor</th>
+      <th>Distribuidor</th>
+      <th>Estado</th>
+      <th>Foto</th>
+    </tr>
+  </thead>
+  <tbody id={tbodyId}>
+    <!-- Contenido dinámico -->
+  </tbody>
+</table>
+
+<style>
+  .sales-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.9rem;
+  }
+
+  .sales-table th,
+  .sales-table td {
+    padding: 0.875rem 1.25rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .sales-table thead {
+    background-color: var(--color-bg-card);
+  }
+
+  .sales-table th {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    letter-spacing: 0.05em;
+  }
+
+  .sales-table tbody tr:hover {
+    background-color: var(--color-bg-card);
+  }
+
+  /* Status Badge */
+  :global(.status-badge) {
+    display: inline-block;
+    padding: 0.25em 0.6em;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 9999px;
+  }
+
+  :global(.status-aprobada) {
+    background-color: rgba(56, 161, 105, 0.2);
+    color: #68d391;
+  }
+
+  :global(.status-pendiente) {
+    background-color: rgba(221, 107, 32, 0.2);
+    color: #f6ad55;
+  }
+
+  :global(.status-rechazada) {
+    background-color: rgba(229, 62, 62, 0.2);
+    color: #fc8181;
+  }
+
+  /* Photo button */
+  :global(.btn-view-photo) {
+    background: none;
+    border: 1px solid var(--color-accent);
+    color: var(--color-accent);
+    padding: 0.5rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  :global(.btn-view-photo:hover) {
+    background: rgba(66, 153, 225, 0.1);
+  }
+</style>

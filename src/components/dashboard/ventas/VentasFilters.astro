@@ -1,0 +1,104 @@
+---
+import Button from "../../Button.astro";
+import ExportButton from "./ExportButton.astro";
+
+interface Props {
+  searchId?: string;
+  productId?: string;
+  dateFromId?: string;
+  dateToId?: string;
+  filterBtnId?: string;
+}
+
+const {
+  searchId = "search",
+  productId = "filtro-producto",
+  dateFromId = "fecha-desde",
+  dateToId = "fecha-hasta",
+  filterBtnId = "filter-btn",
+} = Astro.props;
+---
+
+<div class="filters-container">
+  <div class="main-filters">
+    <div class="search-wrapper">
+      <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
+        <path
+          fill-rule="evenodd"
+          d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+          clip-rule="evenodd"></path>
+      </svg>
+      <input
+        type="text"
+        id={searchId}
+        class="form-input search-input"
+        placeholder="Buscar por N° factura o serie..."
+      />
+    </div>
+
+    <div class="form-group">
+      <select id={productId} class="form-input">
+        <option value="">Todos los productos</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <input
+        type="date"
+        id={dateFromId}
+        class="form-input"
+        placeholder="Fecha desde"
+      />
+    </div>
+
+    <div class="form-group">
+      <input
+        type="date"
+        id={dateToId}
+        class="form-input"
+        placeholder="Fecha hasta"
+      />
+    </div>
+  </div>
+
+  <Button variant="outline" id={filterBtnId}>Filtrar</Button>
+
+  <ExportButton />
+</div>
+
+<style>
+  .filters-container {
+    margin-bottom: 2rem;
+  }
+
+  .main-filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .search-wrapper {
+    position: relative;
+    flex-grow: 1;
+    min-width: 200px;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 0.875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--color-text-secondary);
+  }
+
+  .search-input {
+    padding-left: 2.75rem;
+  }
+
+  .form-group {
+    margin-bottom: 0;
+  }
+</style>
