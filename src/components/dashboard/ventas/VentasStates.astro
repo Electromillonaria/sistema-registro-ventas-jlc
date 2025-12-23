@@ -1,0 +1,83 @@
+---
+interface Props {
+  loadingId?: string;
+  errorId?: string;
+  emptyId?: string;
+  retryBtnId?: string;
+}
+
+const {
+  loadingId = "loading-state",
+  errorId = "error-state",
+  emptyId = "empty-state",
+  retryBtnId = "retry-btn",
+} = Astro.props;
+---
+
+<!-- Loading State -->
+<div id={loadingId} class="state-message">
+  <div class="spinner"></div>
+  <p>Cargando ventas...</p>
+</div>
+
+<!-- Error State -->
+<div id={errorId} class="state-message" style="display: none;">
+  <svg class="error-icon" viewBox="0 0 20 20" fill="currentColor">
+    <path
+      fill-rule="evenodd"
+      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+      clip-rule="evenodd"></path>
+  </svg>
+  <p>Error al cargar las ventas</p>
+  <button id={retryBtnId} class="btn btn-primary">Reintentar</button>
+</div>
+
+<!-- Empty State -->
+<div id={emptyId} class="state-message" style="display: none;">
+  <svg class="empty-icon" viewBox="0 0 20 20" fill="currentColor">
+    <path
+      fill-rule="evenodd"
+      d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
+      clip-rule="evenodd"></path>
+  </svg>
+  <p>No hay ventas registradas</p>
+</div>
+
+<style>
+  .state-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    text-align: center;
+    color: var(--color-text-secondary);
+  }
+
+  .state-message p {
+    margin: 1rem 0;
+    font-size: 1.125rem;
+  }
+
+  .spinner {
+    border: 3px solid var(--color-border);
+    border-top-color: var(--color-accent);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .error-icon,
+  .empty-icon {
+    width: 3rem;
+    height: 3rem;
+    color: var(--color-text-secondary);
+  }
+</style>

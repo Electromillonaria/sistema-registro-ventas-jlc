@@ -1,247 +1,24 @@
 ---
 import Card from "../Card.astro";
-import Button from "../Button.astro";
+import VentasFilters from "./ventas/VentasFilters.astro";
+import VentasStates from "./ventas/VentasStates.astro";
+import VentasTable from "./ventas/VentasTable.astro";
 ---
 
 <Card title="Historial de Ventas">
-  <div class="filters-container">
-    <div class="main-filters">
-      <div class="search-wrapper">
-        <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor"
-          ><path
-            fill-rule="evenodd"
-            d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
-            clip-rule="evenodd"></path></svg
-        >
-        <input
-          type="text"
-          id="search"
-          class="form-input search-input"
-          placeholder="Buscar por N° Factura o Serie..."
-        />
-      </div>
-      <div class="form-group">
-        <select id="filtro-producto" class="form-input">
-          <option value="">Todos los productos</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <input
-          type="date"
-          id="fecha-desde"
-          class="form-input"
-          placeholder="Fecha desde"
-        />
-      </div>
-      <div class="form-group">
-        <input
-          type="date"
-          id="fecha-hasta"
-          class="form-input"
-          placeholder="Fecha hasta"
-        />
-      </div>
-      <Button variant="outline" id="filter-btn">Filtrar</Button>
-    </div>
-  </div>
+  <VentasFilters />
 
   <div class="sales-table-wrapper">
-    <div id="loading-state" class="state-message">
-      <div class="spinner"></div>
-      <p>Cargando ventas...</p>
-    </div>
-
-    <div id="error-state" class="state-message" style="display: none;">
-      <svg class="error-icon" viewBox="0 0 20 20" fill="currentColor"
-        ><path
-          fill-rule="evenodd"
-          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
-          clip-rule="evenodd"></path></svg
-      >
-      <p>Error al cargar las ventas</p>
-      <Button variant="outline" id="retry-btn">Reintentar</Button>
-    </div>
-
-    <div id="empty-state" class="state-message" style="display: none;">
-      <svg class="empty-icon" viewBox="0 0 20 20" fill="currentColor"
-        ><path
-          fill-rule="evenodd"
-          d="M5.5 3A2.5 2.5 0 003 5.5v9A2.5 2.5 0 005.5 17h9a2.5 2.5 0 002.5-2.5v-9A2.5 2.5 0 0014.5 3h-9zm5.25 9.5a.75.75 0 00-1.5 0V14a.75.75 0 001.5 0v-1.5zM10 8a.75.75 0 01.75.75v2.5a.75.75 0 01-1.5 0v-2.5A.75.75 0 0110 8z"
-          clip-rule="evenodd"></path></svg
-      >
-      <p>No hay ventas registradas</p>
-    </div>
-
-    <table class="sales-table" id="sales-table" style="display: none;">
-      <thead>
-        <tr>
-          <th>Fecha</th>
-          <th>N° Factura</th>
-          <th>Producto</th>
-          <th>N° Serie</th>
-          <th>Asesor</th>
-          <th>Distribuidor</th>
-          <th>Estado</th>
-          <th>Foto</th>
-        </tr>
-      </thead>
-      <tbody id="sales-tbody">
-        <!-- Contenido dinámico -->
-      </tbody>
-    </table>
+    <VentasStates />
+    <VentasTable />
   </div>
 </Card>
 
 <style>
-  /* States */
-  .state-message {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 3rem 1rem;
-    text-align: center;
-    color: var(--color-text-secondary);
-  }
-
-  .state-message p {
-    margin: 1rem 0;
-    font-size: 1.125rem;
-  }
-
-  .spinner {
-    border: 3px solid var(--color-border);
-    border-top-color: var(--color-accent);
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-  }
-
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  .error-icon,
-  .empty-icon {
-    width: 3rem;
-    height: 3rem;
-    color: var(--color-text-secondary);
-  }
-
-  /* Filters */
-  .filters-container {
-    margin-bottom: 2rem;
-  }
-
-  .main-filters {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-
-  .search-wrapper {
-    position: relative;
-    flex-grow: 1;
-    min-width: 200px;
-  }
-
-  .search-icon {
-    position: absolute;
-    left: 0.875rem;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 1.25rem;
-    height: 1.25rem;
-    color: var(--color-text-secondary);
-  }
-
-  .search-input {
-    padding-left: 2.75rem;
-  }
-
-  .form-group {
-    margin-bottom: 0;
-  }
-
-  /* Table */
+  /* Table Wrapper - único estilo que se queda aquí */
   .sales-table-wrapper {
     overflow-x: auto;
     min-height: 300px;
-  }
-
-  .sales-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: left;
-    font-size: 0.9rem;
-  }
-
-  .sales-table th,
-  .sales-table td {
-    padding: 0.875rem 1.25rem;
-    border-bottom: 1px solid var(--color-border);
-  }
-
-  .sales-table thead {
-    background-color: var(--color-bg-card);
-  }
-
-  .sales-table th {
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--color-text-secondary);
-    letter-spacing: 0.05em;
-  }
-
-  .sales-table tbody tr:hover {
-    background-color: var(--color-bg-card);
-  }
-
-  /* Status Badge */
-  .status-badge {
-    display: inline-block;
-    padding: 0.25em 0.6em;
-    font-size: 0.75rem;
-    font-weight: 600;
-    border-radius: 9999px;
-  }
-
-  .status-aprobada {
-    background-color: rgba(56, 161, 105, 0.2);
-    color: #68d391;
-  }
-
-  .status-pendiente {
-    background-color: rgba(221, 107, 32, 0.2);
-    color: #f6ad55;
-  }
-
-  .status-rechazada {
-    background-color: rgba(229, 62, 62, 0.2);
-    color: #fc8181;
-  }
-
-  /* Photo button */
-  .btn-view-photo {
-    background: none;
-    border: 1px solid var(--color-accent);
-    color: var(--color-accent);
-    padding: 0.5rem;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-  }
-
-  .btn-view-photo:hover {
-    background: rgba(66, 153, 225, 0.1);
   }
 </style>
 
@@ -251,6 +28,12 @@ import Button from "../Button.astro";
 
     let allSales = [];
     let allProducts = [];
+    let currentFilteredSales = []; // Array con ventas filtradas actualmente
+
+    // Export elements
+    const exportBtn = document.getElementById("export-btn");
+    const exportMenu = document.getElementById("export-menu");
+    const exportCount = document.getElementById("export-count");
 
     // Elementos DOM
     const loadingState = document.getElementById("loading-state");
@@ -463,7 +246,9 @@ import Button from "../Button.astro";
         });
       }
 
+      currentFilteredSales = filtered; // Guardar para exportación
       renderSales(filtered);
+      updateExportButton(); // Actualizar contador
     }
 
     // Event listeners
@@ -492,6 +277,185 @@ import Button from "../Button.astro";
 
     if (fechaHasta) {
       fechaHasta.addEventListener("change", filterSales);
+    }
+
+    // ===== FUNCIONES DE EXPORTACIÓN =====
+    // Nota: Estas funciones se mantienen aquí porque <script is:inline>
+    // no puede importar módulos ES6
+
+    // Actualizar estado del botón de exportar
+    function updateExportButton() {
+      const count = currentFilteredSales.length;
+      if (exportCount) exportCount.textContent = count;
+      if (exportBtn) exportBtn.disabled = count === 0;
+    }
+
+    // Generar timestamp para nombres de archivo
+    function getTimestamp() {
+      const now = new Date();
+      return now.toISOString().slice(0, 19).replace(/:/g, "-");
+    }
+
+    // Escapar valores para CSV
+    function escapeCSV(value) {
+      if (value === null || value === undefined) return "";
+      const str = String(value);
+      if (str.includes(",") || str.includes('"') || str.includes("\n")) {
+        return `"${str.replace(/"/g, '""')}"`;
+      }
+      return str;
+    }
+
+    // Exportar a CSV
+    function exportToCSV(sales) {
+      // 1. Headers
+      const headers = [
+        "Fecha",
+        "N° Factura",
+        "Producto",
+        "N° Serie",
+        "Asesor",
+        "Cédula",
+        "Llave BRE-B",
+        "Distribuidor",
+        "Estado",
+      ];
+
+      // 2. Datos
+      const rows = sales.map((sale) => [
+        sale.fecha_venta || "",
+        sale.numero_factura || "",
+        sale.modelo_producto || sale.desc_producto || "",
+        sale.numero_serie || "",
+        `${sale.nombre_asesor || ""} ${sale.apellido_asesor || ""}`.trim(),
+        sale.cedula_asesor || "",
+        sale.llave_breb || "",
+        sale.nombre_distribuidor || "",
+        sale.estado || "",
+      ]);
+      // 3. Combinar en string CSV
+      const csvContent = [
+        headers.join(","),
+        ...rows.map((row) => row.map(escapeCSV).join(",")),
+      ].join("\n");
+
+      // 4. Crear Blob y descargar (UTF-8 con BOM para Excel)
+      const blob = new Blob(["\uFEFF" + csvContent], {
+        type: "text/csv;charset=utf-8;",
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `ventas_${getTimestamp()}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      console.log(`Exportadas ${sales.length} ventas a CSV`);
+    }
+
+    // Exportar a Excel
+    function exportToExcel(sales) {
+      if (typeof XLSX === "undefined") {
+        alert("Error: Librería de Excel no disponible");
+        return;
+      }
+
+      // 1. Preparar datos en formato tabla
+      const data = [
+        // Headers
+        [
+          "Fecha",
+          "N° Factura",
+          "Producto",
+          "N° Serie",
+          "Asesor",
+          "Cédula",
+          "Llave BRE-B",
+          "Distribuidor",
+          "Estado",
+        ],
+
+        // Datos
+        ...sales.map((sale) => [
+          sale.fecha_venta || "",
+          sale.numero_factura || "",
+          sale.modelo_producto || sale.desc_producto || "",
+          sale.numero_serie || "",
+          `${sale.nombre_asesor || ""} ${sale.apellido_asesor || ""}`.trim(),
+          sale.cedula_asesor || "",
+          sale.llave_breb || "",
+          sale.nombre_distribuidor || "",
+          sale.estado || "",
+        ]),
+      ];
+      // 2. Crear worksheet
+      const ws = XLSX.utils.aoa_to_sheet(data);
+
+      // 3. Ajustar anchos de columna
+      ws["!cols"] = [
+        { wch: 12 }, // Fecha
+        { wch: 15 }, // N° Factura
+        { wch: 25 }, // Producto
+        { wch: 15 }, // N° Serie
+        { wch: 25 }, // Asesor
+        { wch: 12 }, // Cédula
+        { wch: 15 }, // Llave BRE-B
+        { wch: 25 }, // Distribuidor
+        { wch: 12 }, // Estado
+      ];
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Ventas");
+
+      // 5. Generar archivo y descargar
+      XLSX.writeFile(wb, `ventas_${getTimestamp()}.xlsx`);
+
+      console.log(`✅ Exportadas ${sales.length} ventas a Excel`);
+    }
+
+    // ===== EVENT LISTENERS DE EXPORTACIÓN =====
+
+    // Toggle export menu
+    if (exportBtn) {
+      exportBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (exportMenu) {
+          exportMenu.classList.toggle("show");
+        }
+      });
+    }
+
+    // Cerrar menu al hacer click fuera
+    document.addEventListener("click", () => {
+      if (exportMenu && exportMenu.classList.contains("show")) {
+        exportMenu.classList.remove("show");
+      }
+    });
+
+    // Manejar selección de formato
+    if (exportMenu) {
+      exportMenu.querySelectorAll("button").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const format = btn.getAttribute("data-format");
+
+          if (currentFilteredSales.length === 0) {
+            alert("No hay ventas para exportar");
+            return;
+          }
+
+          if (format === "excel") {
+            exportToExcel(currentFilteredSales);
+          } else if (format === "csv") {
+            exportToCSV(currentFilteredSales);
+          }
+
+          // Cerrar menu
+          exportMenu.classList.remove("show");
+        });
+      });
     }
 
     // Inicializar
