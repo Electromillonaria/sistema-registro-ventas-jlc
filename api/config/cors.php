@@ -14,9 +14,9 @@ $allowedOrigins = [
     'http://localhost:4321',
     'http://127.0.0.1:4321',
     'http://localhost:3000',
-    // IMPORTANTE: Agregar tu dominio de producción aquí
-    // 'https://tu-dominio.com',
-    // 'https://www.tu-dominio.com'
+    // Producción
+    'https://ventas.jlc-electronics.com',
+    'https://www.ventas.jlc-electronics.com',
 ];
 
 $requestOrigin = $_SERVER['HTTP_ORIGIN'] ?? '';

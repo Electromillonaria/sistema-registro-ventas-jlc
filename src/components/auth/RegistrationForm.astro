@@ -697,17 +697,21 @@ import Button from "../Button.astro";
       submitButton.disabled = true;
       submitButton.textContent = "Registrando...";
 
+      // Detectar entorno automáticamente
+      const API_BASE =
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1"
+          ? "http://localhost:8000"
+          : window.location.origin + "/api";
+
       try {
-        const response = await fetch(
-          "http://localhost:8000/auth/register.php",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
+        const response = await fetch(`${API_BASE}/auth/register.php`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
           },
-        );
+          body: JSON.stringify(data),
+        });
 
         const result = await response.json();
 
