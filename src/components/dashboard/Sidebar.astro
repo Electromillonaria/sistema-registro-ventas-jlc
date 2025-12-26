@@ -1,14 +1,17 @@
 ---
 import Logo from "../Logo.astro";
+import Avatar from "../Avatar.astro";
 ---
 
 <aside class="sidebar">
   <div class="sidebar-header">
-    <Logo />
+    <Logo width="6em" margin="0.2rem auto" color="primary" />
   </div>
 
   <div class="user-profile">
-    <img src="/dashboard/perfil" alt="User Avatar" class="avatar" />
+    <a href="/dashboard/perfil" class="avatar-link">
+      <Avatar size="md" />
+    </a>
     <a href="/dashboard/perfil" class="user-info">
       <span class="user-name">Nombre Prueba</span>
       <span class="user-role">Asesor</span>
@@ -155,21 +158,40 @@ import Logo from "../Logo.astro";
     margin-bottom: 1.5rem;
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: var(--radius-lg);
+    transition: background-color 0.2s;
   }
-  .avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    object-fit: cover;
+
+  .user-profile:hover {
+    background-color: rgba(0, 0, 0, 0.3);
   }
+
+  .avatar-link {
+    display: flex;
+    text-decoration: none;
+    transition: transform 0.2s;
+  }
+
+  .avatar-link:hover {
+    transform: scale(1.05);
+  }
+
   .user-info {
     display: flex;
     flex-direction: column;
+    text-decoration: none;
+    flex: 1;
   }
+
+  .user-info:hover .user-name {
+    color: var(--color-accent);
+  }
+
   .user-name {
     font-weight: 600;
     color: var(--color-text-main);
+    transition: color 0.2s;
   }
+
   .user-role {
     font-size: 0.875rem;
     color: var(--color-text-secondary);
