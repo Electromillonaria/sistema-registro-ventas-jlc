@@ -301,6 +301,16 @@ import Button from "../Button.astro";
         Es obligatorio leer y aceptar todas las declaraciones legales para
         participar en el Programa de Incentivos:
       </p>
+      <div class="accept-all-container">
+        <Button
+          type="button"
+          variant="outline"
+          id="accept-all-terms-btn"
+          className="w-full sm:w-auto"
+        >
+          Aceptar Todos los Términos y Declaraciones
+        </Button>
+      </div>
       <div class="legal-declarations">
         <div class="checkbox-item legal-item">
           <input
@@ -599,6 +609,11 @@ import Button from "../Button.astro";
     color: var(--color-accent-hover);
     text-decoration: none;
   }
+  .accept-all-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
 </style>
 
 <script is:inline>
@@ -761,5 +776,20 @@ import Button from "../Button.astro";
     nombreInput.addEventListener("input", checkLlaveBreb);
     apellidoInput.addEventListener("input", checkLlaveBreb);
     llaveBrebInput.addEventListener("input", checkLlaveBreb);
+  });
+</script>
+
+<script is:inline>
+  document.addEventListener("DOMContentLoaded", () => {
+    const acceptAllBtn = document.getElementById("accept-all-terms-btn");
+    if (acceptAllBtn) {
+      acceptAllBtn.addEventListener("click", () => {
+        const form = document.getElementById("registration-form");
+        const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach((checkbox) => {
+          checkbox.checked = true;
+        });
+      });
+    }
   });
 </script>
