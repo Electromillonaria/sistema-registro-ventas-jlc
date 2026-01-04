@@ -1,6 +1,7 @@
 ---
 import SearchBox from "../SearchBox.astro";
 import FilterSelect from "../FilterSelect.astro";
+import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
 
 interface Props {}
 ---
@@ -45,6 +46,9 @@ interface Props {}
     <!-- Dynamic content -->
   </div>
 </div>
+
+<!-- User Profile Popup -->
+<UserProfilePopup />
 
 <style is:global>
   .filters-section {
@@ -481,6 +485,14 @@ interface Props {}
         toggle.addEventListener("change", (e) => {
           handleToggle(e.target);
         });
+
+        // Event listener para abrir popup al hacer click en la card
+        card.addEventListener("click", (e) => {
+          if (!e.target.closest(".toggle-switch") && window.UserProfilePopup) {
+            window.UserProfilePopup.show(user.id);
+          }
+        });
+        card.style.cursor = "pointer";
 
         usersList.appendChild(card);
       });
