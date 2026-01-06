@@ -80,6 +80,16 @@ import Button from "../Button.astro";
           />
         </div>
         <div class="form-group">
+          <label for="departamento" class="form-label">Departamento</label>
+          <input
+            type="text"
+            id="departamento"
+            name="departamento"
+            class="form-input"
+            required
+          />
+        </div>
+        <div class="form-group">
           <label for="ciudad_residencia" class="form-label"
             >Ciudad de Residencia</label
           >
@@ -87,16 +97,6 @@ import Button from "../Button.astro";
             type="text"
             id="ciudad_residencia"
             name="ciudad_residencia"
-            class="form-input"
-            required
-          />
-        </div>
-        <div class="form-group">
-          <label for="departamento" class="form-label">Departamento</label>
-          <input
-            type="text"
-            id="departamento"
-            name="departamento"
             class="form-input"
             required
           />
@@ -636,7 +636,7 @@ import Button from "../Button.astro";
         showError("Las contraseñas no coinciden.");
         return;
       }
-// @ts-ignore
+      // @ts-ignore
       if (data.password.length < 8 || !/\d/.test(data.password)) {
         showError(
           "La contraseña debe tener al menos 8 caracteres y un número.",
@@ -752,7 +752,7 @@ import Button from "../Button.astro";
         }
       }
     });
-      // @ts-ignore
+    // @ts-ignore
     function showError(message) {
       // @ts-ignore
       errorMessageDiv.textContent = message;
@@ -763,7 +763,7 @@ import Button from "../Button.astro";
   });
 </script>
 
-<script> 
+<script>
   document.addEventListener("DOMContentLoaded", () => {
     const acceptAllBtn = document.getElementById("accept-all-terms-btn");
     if (acceptAllBtn) {
