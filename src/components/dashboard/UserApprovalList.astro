@@ -375,14 +375,6 @@ interface Props {}
       try {
         const url = `${API_BASE}/users/pending.php?estado=${currentFilter}`;
 
-        if (import.meta.env.DEV) {
-          console.log("Fetching:", url);
-          console.log(
-            "Authorization header:",
-            `Bearer ${token.substring(0, 20)}...`,
-          );
-        }
-
         const response = await fetch(url, {
           method: "GET",
           headers: {
