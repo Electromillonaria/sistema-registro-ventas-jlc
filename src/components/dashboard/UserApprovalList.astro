@@ -316,7 +316,8 @@ interface Props {}
 
 <script is:inline>
   (function () {
-    const API_BASE = "http://ventas.jlc-electronics.com/api";
+    // ⚠️ SECURITY: Use environment variable instead of hardcoded URL
+    const API_BASE = import.meta.env.PUBLIC_API_URL || "/api";
 
     // Estado
     let allUsers = [];
@@ -366,28 +367,35 @@ interface Props {}
       const token = localStorage.getItem("token");
       const user = localStorage.getItem("user");
 
-      // DEBUG: Mostrar información del token
-      console.log("=== DEBUG: User Approval - Load Users ===");
-      console.log("Token exists:", !!token);
-      console.log(
-        "Token value:",
-        token ? token.substring(0, 50) + "..." : "NULL",
-      );
-      console.log("User data:", user);
+      // DEBUG: Only log in development
+      if (import.meta.env.DEV) {
+        console.log("=== DEBUG: User Approval - Load Users ===");
+        console.log("Token exists:", !!token);
+        console.log(
+          "Token value:",
+          token ? token.substring(0, 50) + "..." : "NULL",
+        );
+        console.log("User data:", user);
+      }
 
       if (!token) {
-        console.error("No token found, redirecting to login");
+        if (import.meta.env.DEV) {
+          console.error("No token found, redirecting to login");
+        }
         window.location.href = "/login";
         return;
       }
 
       try {
         const url = `${API_BASE}/users/pending.php?estado=${currentFilter}`;
-        console.log("Fetching:", url);
-        console.log(
-          "Authorization header:",
-          `Bearer ${token.substring(0, 20)}...`,
-        );
+
+        if (import.meta.env.DEV) {
+          console.log("Fetching:", url);
+          console.log(
+            "Authorization header:",
+            `Bearer ${token.substring(0, 20)}...`,
+          );
+        }
 
         const response = await fetch(url, {
           method: "GET",
@@ -396,15 +404,25 @@ interface Props {}
           },
         });
 
-        console.log("Response status:", response.status);
-        console.log("Response headers:", [...response.headers.entries()]);
+        if (import.meta.env.DEV) {
+          console.log("Response status:", response.status);
+          console.log("Response headers:", [...response.headers.entries()]);
+        }
 
         const data = await response.json();
-        console.log("Response data:", data);
+
+        if (import.meta.env.DEV) {
+          console.log("Response data:", data);
+        }
 
         if (response.status === 401 || response.status === 403) {
-          console.error("Authentication failed with status:", response.status);
-          console.error("Response message:", data.message);
+          if (import.meta.env.DEV) {
+            console.error(
+              "Authentication failed with status:",
+              response.status,
+            );
+            console.error("Response message:", data.message);
+          }
           alert(
             `Autenticación fallida: ${data.message || "Token inválido"}. Serás redirigido al login.`,
           );
