@@ -137,7 +137,9 @@
             <div class="info-grid">
               <div class="info-field">
                 <span class="field-label">Rol</span>
-                <p id="popup-rol" class="badge">-</p>
+                <div id="popup-rol-container">
+                  <!-- This will be populated dynamically -->
+                </div>
               </div>
               <div class="info-field">
                 <span class="field-label">Estado de Cuenta</span>
@@ -382,14 +384,86 @@
     color: #fc8181;
   }
 
+  .badge.role-administrador,
   .badge.admin {
-    background-color: rgba(159, 122, 234, 0.2);
-    color: #b794f6;
+    background-color: rgba(245, 101, 101, 0.2);
+    color: #f56565;
   }
 
+  .badge.role-asesor,
   .badge.asesor {
     background-color: rgba(66, 153, 225, 0.2);
     color: #63b3ed;
+  }
+
+  .badge.role-auditor {
+    background-color: rgba(156, 39, 176, 0.2);
+    color: #9c27b0;
+  }
+
+  /* Role badge editable styles */
+  .badge.editable {
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .badge.editable:hover {
+    transform: scale(1.05);
+    filter: brightness(1.2);
+    box-shadow: 0 0 0 2px var(--color-accent);
+  }
+
+  .badge.editable:active {
+    transform: scale(0.98);
+  }
+
+  /* Role select dropdown */
+  .role-select {
+    padding: 0.35rem 2rem 0.35rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    appearance: none;
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1em;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  }
+
+  .role-select.role-administrador {
+    background-color: rgba(245, 101, 101, 0.2);
+    color: #f56565;
+  }
+
+  .role-select.role-asesor {
+    background-color: rgba(66, 153, 225, 0.2);
+    color: #63b3ed;
+  }
+
+  .role-select.role-auditor {
+    background-color: rgba(156, 39, 176, 0.2);
+    color: #9c27b0;
+  }
+
+  .role-select:hover {
+    border-color: var(--color-accent);
+    filter: brightness(1.1);
+  }
+
+  .role-select:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+  }
+
+  .role-select option {
+    background-color: var(--color-bg-card);
+    color: var(--color-text-main);
+    padding: 0.5rem;
   }
 
   /* Responsive */
@@ -426,10 +500,23 @@
   window.UserProfilePopup = {
     overlay: null,
     currentUserId: null,
+    currentUserData: null,
+    isAdmin: false,
 
     init() {
       this.overlay = document.getElementById("user-profile-popup");
       const closeBtn = this.overlay.querySelector(".popup-close");
+
+      // Check if user is admin
+      const userStr = localStorage.getItem("user");
+      if (userStr) {
+        try {
+          const user = JSON.parse(userStr);
+          this.isAdmin = user.rol === "administrador";
+        } catch (e) {
+          console.error("Error parsing user:", e);
+        }
+      }
 
       // Close on button click
       closeBtn?.addEventListener("click", () => this.hide());
@@ -520,6 +607,9 @@
     },
 
     displayProfile(user) {
+      // Store user data for role updates
+      this.currentUserData = user;
+
       // Información Personal
       document.getElementById("popup-nombre-completo").textContent =
         `${user.nombre || ""} ${user.apellido || ""}`.trim() || "-";
@@ -555,13 +645,8 @@
       document.getElementById("popup-antiguedad").textContent =
         user.antiguedad_meses ? `${user.antiguedad_meses} meses` : "-";
 
-      // Datos de Cuenta
-      const rolEl = document.getElementById("popup-rol");
-      rolEl.textContent = user.rol || "-";
-      rolEl.className = "badge";
-      if (user.rol) {
-        rolEl.classList.add(user.rol === "admin" ? "admin" : "asesor");
-      }
+      // Datos de Cuenta - Role
+      this.renderRoleField(user.rol);
 
       const estadoEl = document.getElementById("popup-estado-cuenta");
       estadoEl.textContent = user.activo ? "Activa" : "Inactiva";
@@ -576,6 +661,114 @@
           : "-";
 
       this.showProfile();
+    },
+
+    renderRoleField(currentRole) {
+      const container = document.getElementById("popup-rol-container");
+      const roleMap = {
+        administrador: "Administrador",
+        asesor: "Asesor",
+        auditor: "Auditor",
+      };
+
+      if (this.isAdmin) {
+        // Create dropdown for admins
+        const select = document.createElement("select");
+        select.className = `role-select role-${currentRole}`;
+        select.id = "popup-rol-select";
+
+        // Add options
+        ["asesor", "auditor", "administrador"].forEach((role) => {
+          const option = document.createElement("option");
+          option.value = role;
+          option.textContent = roleMap[role];
+          option.selected = role === currentRole;
+          select.appendChild(option);
+        });
+
+        // Add change event listener
+        select.addEventListener("change", (e) =>
+          this.handleRoleChange(e.target.value),
+        );
+
+        container.innerHTML = "";
+        container.appendChild(select);
+      } else {
+        // Create static badge for non-admins
+        const badge = document.createElement("p");
+        badge.className = `badge role-${currentRole}`;
+        badge.textContent = roleMap[currentRole] || currentRole || "-";
+
+        container.innerHTML = "";
+        container.appendChild(badge);
+      }
+    },
+
+    async handleRoleChange(newRole) {
+      if (!this.isAdmin || !this.currentUserData) return;
+
+      const currentRole = this.currentUserData.rol;
+
+      // If same role, do nothing
+      if (newRole === currentRole) return;
+
+      const selectEl = document.getElementById("popup-rol-select");
+      const originalRole = currentRole;
+
+      // Disable select during update
+      selectEl.disabled = true;
+      selectEl.style.opacity = "0.6";
+
+      const API_BASE =
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1"
+          ? "http://localhost:8000"
+          : window.location.origin + "/api";
+
+      const token = localStorage.getItem("token");
+
+      try {
+        const response = await fetch(`${API_BASE}/users/update_role.php`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            userId: this.currentUserData.id,
+            newRole: newRole,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.status === 200) {
+          // Update local data
+          this.currentUserData.rol = newRole;
+
+          // Update select styling
+          selectEl.className = `role-select role-${newRole}`;
+          selectEl.disabled = false;
+          selectEl.style.opacity = "";
+
+          // Update the badge in the user list (if function exists)
+          if (typeof window.updateUserRoleBadge === "function") {
+            window.updateUserRoleBadge(this.currentUserData.id, newRole);
+          }
+
+          // Show success notification
+          console.log(`✅ Rol actualizado a: ${newRole}`);
+        } else {
+          throw new Error(data.message || "Error al actualizar rol");
+        }
+      } catch (error) {
+        console.error("Error updating role:", error);
+        // Rollback
+        selectEl.value = originalRole;
+        selectEl.disabled = false;
+        selectEl.style.opacity = "";
+        alert("Error al actualizar el rol: " + error.message);
+      }
     },
 
     resetContent() {
