@@ -1,6 +1,6 @@
 <?php
 /**
- * API Endpoint: Activar o desactivar usuario
+ * API Endpoint: Actualizar rol de usuario
  * Solo accesible por administradores
  */
 
@@ -47,11 +47,13 @@ try {
         exit();
     }
     
-    // Verificar que el usuario sea administrador o auditor
-    $rol = $decoded['rol'] ?? null;
-    if ($rol !== 'administrador' && $rol !== 'auditor') {
+    // SEGURIDAD CRÍTICA: Solo administradores pueden cambiar roles
+    $requesterId = $decoded['user_id'] ?? null;
+    $requesterRol = $decoded['rol'] ?? null;
+    
+    if ($requesterRol !== 'administrador') {
         http_response_code(403);
-        echo json_encode(['status' => 403, 'message' => 'Acceso denegado. Solo administradores y auditores']);
+        echo json_encode(['status' => 403, 'message' => 'Acceso denegado. Solo administradores pueden cambiar roles']);
         exit();
     }
     
@@ -66,62 +68,63 @@ try {
     
     // Validar campos requeridos
     $userId = $data['userId'] ?? null;
-    $activo = $data['activo'] ?? null;
+    $newRole = $data['newRole'] ?? null;
     
-    if (!$userId || !isset($activo)) {
+    if (!$userId || !$newRole) {
         http_response_code(400);
-        echo json_encode(['status' => 400, 'message' => 'userId y activo son requeridos']);
+        echo json_encode(['status' => 400, 'message' => 'userId y newRole son requeridos']);
         exit();
     }
     
-    // Validar valor booleano
-    if (!is_bool($activo) && $activo !== 0 && $activo !== 1) {
+    // SEGURIDAD: Validar que el nuevo rol sea válido (whitelist)
+    $validRoles = ['administrador', 'asesor', 'auditor'];
+    if (!in_array($newRole, $validRoles)) {
         http_response_code(400);
-        echo json_encode(['status' => 400, 'message' => 'activo debe ser true/false o 1/0']);
+        echo json_encode(['status' => 400, 'message' => 'Rol inválido. Debe ser: administrador, asesor o auditor']);
         exit();
     }
     
     $db = Database::getInstance()->getConnection();
     
-    // Verificar que el usuario existe Y obtener su rol
-    $stmt = $db->prepare("SELECT id, nombre, apellido, correo, activo, rol FROM usuarios WHERE id = :id");
+    // Verificar que el usuario objetivo existe y obtener su rol actual
+    $stmt = $db->prepare("SELECT id, nombre, apellido, rol FROM usuarios WHERE id = :id");
     $stmt->bindParam(':id', $userId, PDO::PARAM_INT);
     $stmt->execute();
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    $targetUser = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    if (!$user) {
+    if (!$targetUser) {
         http_response_code(404);
         echo json_encode(['status' => 404, 'message' => 'Usuario no encontrado']);
         exit();
     }
     
-    // SEGURIDAD CRÍTICA: Los auditores solo pueden modificar asesores
-    if ($rol === 'auditor' && $user['rol'] !== 'asesor') {
-        http_response_code(403);
-        echo json_encode(['status' => 403, 'message' => 'Los auditores solo pueden gestionar usuarios con rol asesor']);
+    $previousRole = $targetUser['rol'];
+    
+    // Si el rol no ha cambiado, no hacer nada
+    if ($previousRole === $newRole) {
+        http_response_code(200);
+        echo json_encode([
+            'status' => 200,
+            'message' => 'El usuario ya tiene ese rol',
+            'data' => [
+                'userId' => $userId,
+                'currentRole' => $newRole
+            ]
+        ]);
         exit();
     }
     
-    // Convertir a entero para SQL
-    $activoInt = $activo ? 1 : 0;
-    
-    // Determinar estado_aprobacion basado en activo
-    // Si se activa → aprobado, si se desactiva → pendiente
-    $estadoAprobacion = $activoInt ? 'aprobado' : 'pendiente';
-    
-    // Actualizar estado activo Y estado_aprobacion simultáneamente
-    $stmt = $db->prepare("UPDATE usuarios SET activo = :activo, estado_aprobacion = :estado_aprobacion WHERE id = :id");
-    $stmt->bindParam(':activo', $activoInt, PDO::PARAM_INT);
-    $stmt->bindParam(':estado_aprobacion', $estadoAprobacion, PDO::PARAM_STR);
+    // Actualizar el rol del usuario
+    $stmt = $db->prepare("UPDATE usuarios SET rol = :newRole WHERE id = :id");
+    $stmt->bindParam(':newRole', $newRole, PDO::PARAM_STR);
     $stmt->bindParam(':id', $userId, PDO::PARAM_INT);
     $stmt->execute();
     
     // Registrar en auditoría (si existe la tabla)
     try {
-        $accion = "Cambió estado: activo=" . ($activoInt ? 'SI' : 'NO') . ", aprobación=" . $estadoAprobacion;
-        $adminId = $decoded['user_id'] ?? null;
+        $accion = "Cambió rol de '{$previousRole}' a '{$newRole}'";
         $stmtAudit = $db->prepare("INSERT INTO auditoria (usuario_id, accion, tabla_afectada, registro_id) VALUES (:admin_id, :accion, 'usuarios', :user_id)");
-        $stmtAudit->bindParam(':admin_id', $adminId, PDO::PARAM_INT);
+        $stmtAudit->bindParam(':admin_id', $requesterId, PDO::PARAM_INT);
         $stmtAudit->bindParam(':accion', $accion, PDO::PARAM_STR);
         $stmtAudit->bindParam(':user_id', $userId, PDO::PARAM_INT);
         $stmtAudit->execute();
@@ -130,8 +133,7 @@ try {
         error_log("Advertencia: No se pudo registrar en auditoría: " . $e->getMessage());
     }
     
-    $estadoTexto = $activoInt ? 'activado y aprobado' : 'desactivado';
-    $mensaje = "Usuario {$user['nombre']} {$user['apellido']} $estadoTexto exitosamente";
+    $mensaje = "Rol de {$targetUser['nombre']} {$targetUser['apellido']} actualizado de '{$previousRole}' a '{$newRole}'";
     
     http_response_code(200);
     echo json_encode([
@@ -139,17 +141,17 @@ try {
         'message' => $mensaje,
         'data' => [
             'userId' => $userId,
-            'activo' => $activoInt,
-            'estado_aprobacion' => $estadoAprobacion
+            'previousRole' => $previousRole,
+            'newRole' => $newRole
         ]
     ]);
     
 } catch (PDOException $e) {
-    error_log("Error en toggle_active.php: " . $e->getMessage());
+    error_log("Error en update_role.php: " . $e->getMessage());
     http_response_code(500);
     echo json_encode(['status' => 500, 'message' => 'Error en el servidor']);
 } catch (Exception $e) {
-    error_log("Error en toggle_active.php: " . $e->getMessage());
+    error_log("Error en update_role.php: " . $e->getMessage());
     http_response_code(500);
     echo json_encode(['status' => 500, 'message' => $e->getMessage()]);
 }

@@ -243,8 +243,22 @@ interface Props {}
     font-size: 0.75rem;
     font-weight: 600;
     border-radius: 9999px;
+  }
+
+  /* Role colors */
+  .role-badge.role-asesor {
     background-color: rgba(66, 153, 225, 0.2);
-    color: var(--color-accent);
+    color: #4299e1;
+  }
+
+  .role-badge.role-administrador {
+    background-color: rgba(245, 101, 101, 0.2);
+    color: #f56565;
+  }
+
+  .role-badge.role-auditor {
+    background-color: rgba(156, 39, 176, 0.2);
+    color: #9c27b0;
   }
 
   /* FilterSelect styles (workaround) */
@@ -423,11 +437,18 @@ interface Props {}
       users.forEach((user) => {
         const card = document.createElement("div");
         card.className = "user-card card";
+        card.setAttribute("data-user-id", user.id); // Add user ID for updates
 
         const fechaRegistro = new Date(user.created_at);
         const tiempoTranscurrido = getTimeAgo(fechaRegistro);
 
         const isActive = user.activo === 1;
+
+        // Normalizar el rol para asegurar que coincida con las clases CSS
+        const rolNormalizado = user.rol.toLowerCase().trim();
+        console.log(
+          `Usuario: ${user.nombre}, Rol original: "${user.rol}", Rol normalizado: "${rolNormalizado}"`,
+        );
 
         card.innerHTML = `
           <div class="user-header">
@@ -435,7 +456,7 @@ interface Props {}
               <h3>${user.nombre} ${user.apellido}</h3>
               <p class="user-email">${user.correo}</p>
             </div>
-            <span class="role-badge">${user.rol === "administrador" ? "Admin" : "Asesor"}</span>
+            <span class="role-badge role-${rolNormalizado}">${rolNormalizado === "administrador" ? "Admin" : rolNormalizado === "auditor" ? "Auditor" : "Asesor"}</span>
           </div>
 
           <div class="user-meta">
@@ -638,5 +659,38 @@ interface Props {}
 
     // Inicializar
     loadUsers();
+
+    // Función global para actualizar la insignia de rol cuando se cambia desde la ventana emergente
+    window.updateUserRoleBadge = function (userId, newRole) {
+      const card = document.querySelector(
+        `.user-card[data-user-id="${userId}"]`,
+      );
+      if (!card) return;
+
+      const roleBadge = card.querySelector(".role-badge");
+      if (!roleBadge) return;
+
+      const rolNormalizado = newRole.toLowerCase().trim();
+      const roleText =
+        rolNormalizado === "administrador"
+          ? "Admin"
+          : rolNormalizado === "auditor"
+            ? "Auditor"
+            : "Asesor";
+
+      // Update badge class and text
+      roleBadge.className = `role-badge role-${rolNormalizado}`;
+      roleBadge.textContent = roleText;
+
+      // Update user in allUsers array
+      const userIndex = allUsers.findIndex((u) => u.id === userId);
+      if (userIndex !== -1) {
+        allUsers[userIndex].rol = newRole;
+      }
+
+      console.log(
+        `Badge actualizado en la lista para usuario ${userId}: ${roleText}`,
+      );
+    };
   })();
 </script>

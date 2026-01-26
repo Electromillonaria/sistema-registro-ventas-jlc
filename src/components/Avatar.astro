@@ -6,8 +6,8 @@ interface Props {
 const { size = "md" } = Astro.props;
 ---
 
-<div class={`avatar avatar-${size}`} id="user-avatar">
-  <span class="avatar-initials" id="avatar-initials">--</span>
+<div class={`avatar avatar-${size}`}>
+  <span class="avatar-initials">--</span>
 </div>
 
 <style>
@@ -16,7 +16,7 @@ const { size = "md" } = Astro.props;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--color-accent) 0%, #163A65 100%);
+    background: linear-gradient(135deg, var(--color-accent) 0%, #163a65 100%);
     color: white;
     font-weight: 700;
     flex-shrink: 0;
@@ -34,7 +34,7 @@ const { size = "md" } = Astro.props;
     background: linear-gradient(
       135deg,
       var(--color-accent),
-      #163A65,
+      #163a65,
       var(--color-accent)
     );
     border-radius: 50%;
@@ -73,12 +73,22 @@ const { size = "md" } = Astro.props;
 </style>
 
 <script>
+  // Flag to prevent infinite loops
+  let isUpdating = false;
+
   // Función para obtener las iniciales del usuario
   function updateAvatarInitials() {
-    const userStr = localStorage.getItem("user");
-    const avatarInitials = document.getElementById("avatar-initials");
+    // Prevent recursive calls
+    if (isUpdating) return;
 
-    if (userStr && avatarInitials) {
+    isUpdating = true;
+
+    const userStr = localStorage.getItem("user");
+
+    // Get ALL avatar-initials elements (since there might be multiple on the page)
+    const avatarElements = document.querySelectorAll(".avatar-initials");
+
+    if (userStr && avatarElements.length > 0) {
       try {
         const user = JSON.parse(userStr);
         const nombre = user.nombre || "";
@@ -86,13 +96,25 @@ const { size = "md" } = Astro.props;
 
         const inicial1 = nombre.charAt(0).toUpperCase();
         const inicial2 = apellido.charAt(0).toUpperCase();
+        const initials = inicial1 + inicial2 || "U";
 
-        avatarInitials.textContent = inicial1 + inicial2 || "U";
+        // Update ALL avatar elements ONLY if they have default values
+        avatarElements.forEach((element) => {
+          if (element.textContent === "--" || element.textContent === "U") {
+            element.textContent = initials;
+          }
+        });
       } catch (e) {
         console.error("Error parsing user data:", e);
-        avatarInitials.textContent = "U";
+        avatarElements.forEach((element) => {
+          if (element.textContent === "--") {
+            element.textContent = "U";
+          }
+        });
       }
     }
+
+    isUpdating = false;
   }
 
   // Actualizar cuando el DOM esté listo
@@ -100,5 +122,35 @@ const { size = "md" } = Astro.props;
     document.addEventListener("DOMContentLoaded", updateAvatarInitials);
   } else {
     updateAvatarInitials();
+  }
+
+  // Observar SOLO cuando se añaden nuevos elementos avatar (no cambios de texto)
+  const observer = new MutationObserver((mutations) => {
+    // Check if any new avatar-initials elements were added
+    const hasNewAvatars = mutations.some((mutation) => {
+      return Array.from(mutation.addedNodes).some((node) => {
+        if (node.nodeType === 1) {
+          // Element node
+          return (
+            node.classList?.contains("avatar-initials") ||
+            node.querySelector?.(".avatar-initials")
+          );
+        }
+        return false;
+      });
+    });
+
+    if (hasNewAvatars) {
+      setTimeout(updateAvatarInitials, 50); // Small delay to prevent rapid firing
+    }
+  });
+
+  // Observar cambios en el body
+  if (document.body) {
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      // NO observar characterData para evitar loop infinito
+    });
   }
 </script>
