@@ -367,21 +367,7 @@ interface Props {}
       const token = localStorage.getItem("token");
       const user = localStorage.getItem("user");
 
-      // DEBUG: Only log in development
-      if (import.meta.env.DEV) {
-        console.log("=== DEBUG: User Approval - Load Users ===");
-        console.log("Token exists:", !!token);
-        console.log(
-          "Token value:",
-          token ? token.substring(0, 50) + "..." : "NULL",
-        );
-        console.log("User data:", user);
-      }
-
       if (!token) {
-        if (import.meta.env.DEV) {
-          console.error("No token found, redirecting to login");
-        }
         window.location.href = "/login";
         return;
       }
@@ -404,25 +390,9 @@ interface Props {}
           },
         });
 
-        if (import.meta.env.DEV) {
-          console.log("Response status:", response.status);
-          console.log("Response headers:", [...response.headers.entries()]);
-        }
-
         const data = await response.json();
 
-        if (import.meta.env.DEV) {
-          console.log("Response data:", data);
-        }
-
         if (response.status === 401 || response.status === 403) {
-          if (import.meta.env.DEV) {
-            console.error(
-              "Authentication failed with status:",
-              response.status,
-            );
-            console.error("Response message:", data.message);
-          }
           alert(
             `Autenticación fallida: ${data.message || "Token inválido"}. Serás redirigido al login.`,
           );
