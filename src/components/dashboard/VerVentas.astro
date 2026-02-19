@@ -52,6 +52,7 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
     const productFilter = document.getElementById("filtro-producto");
     const fechaDesde = document.getElementById("fecha-desde");
     const fechaHasta = document.getElementById("fecha-hasta");
+    const estadoFilter = document.getElementById("filtro-estado");
 
     // Funciones de estado
     function showLoading() {
@@ -353,6 +354,7 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
       const productId = productFilter.value;
       const dateFrom = fechaDesde.value;
       const dateTo = fechaHasta.value;
+      const estadoVal = estadoFilter ? estadoFilter.value : "";
 
       let filtered = allSales;
 
@@ -410,6 +412,13 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
         });
       }
 
+      // Filtro por estado
+      if (estadoVal) {
+        filtered = filtered.filter(
+          (sale) => (sale.estado || "pendiente").toLowerCase() === estadoVal,
+        );
+      }
+
       currentFilteredSales = filtered; // Guardar para exportación
       renderSales(filtered);
       updateExportButton(); // Actualizar contador
@@ -427,6 +436,11 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
     // Búsqueda en tiempo real mientras se escribe
     if (searchInput) {
       searchInput.addEventListener("input", filterSales);
+    }
+
+    // Filtro de estado en tiempo real
+    if (estadoFilter) {
+      estadoFilter.addEventListener("change", filterSales);
     }
 
     // Filtrar automáticamente al cambiar producto

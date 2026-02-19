@@ -60,9 +60,20 @@ const {
         placeholder="Fecha hasta"
       />
     </div>
+
+    <div class="form-group">
+      <select id="filtro-estado" class="form-input estado-select">
+        <option value="">Todos los estados</option>
+        <option value="pendiente">Pendiente</option>
+        <option value="aprobada">Aprobada</option>
+        <option value="rechazada">Rechazada</option>
+      </select>
+    </div>
+
     <Button variant="outline" id={filterBtnId} class="filter-btn"
       >Filtrar</Button
     >
+
     <ExportButton />
     <!-- Import CSV Button (solo admin) -->
     <div id="import-csv-container" style="display: none;">
