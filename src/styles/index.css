@@ -164,7 +164,7 @@ a:hover {
 
 .form-input {
   width: 100%;
-  background-color: var(--color-bg-card);
+  background-color: var(--color-bg-cardb);
   border: 1px solid var(--color-border);
   color: var(--color-text-main);
   padding: 0.625rem 0.875rem;
