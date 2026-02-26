@@ -1,0 +1,467 @@
+---
+// DistributorUsersPopup.astro
+// Popup que muestra los asesores de un distribuidor al hacer click en su tarjeta
+---
+
+<div id="dist-users-popup" class="popup-overlay">
+  <div class="popup-container">
+    <div class="popup-content">
+      <!-- Cerrar -->
+      <button class="popup-close" id="dist-popup-close" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+
+      <!-- Header -->
+      <div class="popup-header">
+        <div class="dist-header-icon">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"
+            ></path>
+          </svg>
+        </div>
+        <div>
+          <h2 id="dist-popup-title">Distribuidor</h2>
+          <p id="dist-popup-subtitle" class="dist-subtitle"></p>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <div id="dist-popup-loading" class="popup-state">
+        <div class="spinner"></div>
+        <p>Cargando asesores...</p>
+      </div>
+
+      <!-- Error -->
+      <div id="dist-popup-error" class="popup-state" style="display:none">
+        <p style="color:#fc8181">Error al cargar los datos.</p>
+      </div>
+
+      <!-- Lista de usuarios -->
+      <div id="dist-popup-content" style="display:none">
+        <div class="users-summary">
+          <span id="dist-total-badge" class="summary-badge blue"
+            >0 asesores</span
+          >
+          <span id="dist-active-badge" class="summary-badge green"
+            >0 activos</span
+          >
+        </div>
+        <div id="dist-users-list" class="users-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style is:global>
+  /* ─── Popup Overlay ─────────────────────────────────────── */
+  #dist-users-popup.popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  #dist-users-popup.show {
+    display: flex;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* ─── Container ─────────────────────────────────────────── */
+  #dist-users-popup .popup-container {
+    width: 100%;
+    max-width: 680px;
+    max-height: 85vh;
+    animation: slideUp 0.25s ease-out;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  #dist-users-popup .popup-content {
+    background: var(--color-bg-main);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* ─── Close ─────────────────────────────────────────────── */
+  #dist-users-popup .popup-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    z-index: 10;
+  }
+
+  #dist-users-popup .popup-close:hover {
+    background: var(--color-border);
+    color: var(--color-text-main);
+    transform: rotate(90deg);
+  }
+
+  #dist-users-popup .popup-close svg {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+
+  /* ─── Header ─────────────────────────────────────────────── */
+  #dist-users-popup .popup-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--color-border);
+    flex-shrink: 0;
+  }
+
+  .dist-header-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: var(--radius-md);
+    background: rgba(66, 153, 225, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .dist-header-icon svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--color-accent);
+    stroke: var(--color-accent);
+  }
+
+  #dist-users-popup .popup-header h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text-main);
+    margin: 0 0 0.2rem;
+  }
+
+  .dist-subtitle {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  /* ─── States ─────────────────────────────────────────────── */
+  .popup-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    color: var(--color-text-secondary);
+    text-align: center;
+    gap: 0.75rem;
+  }
+
+  .spinner {
+    border: 3px solid var(--color-border);
+    border-top-color: var(--color-accent);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* ─── Summary badges ────────────────────────────────────── */
+  .users-summary {
+    display: flex;
+    gap: 0.6rem;
+    padding: 1rem 2rem 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .summary-badge {
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+  }
+
+  .summary-badge.blue {
+    background: rgba(66, 153, 225, 0.15);
+    color: #63b3ed;
+  }
+
+  .summary-badge.green {
+    background: rgba(72, 187, 120, 0.15);
+    color: #68d391;
+  }
+
+  /* ─── User list ──────────────────────────────────────────── */
+  .users-list {
+    overflow-y: auto;
+    padding: 0.75rem 2rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+  }
+
+  .dist-user-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-card);
+    transition: border-color 0.2s;
+  }
+
+  .dist-user-row:hover {
+    border-color: var(--color-accent);
+  }
+
+  .dist-user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    min-width: 0;
+  }
+
+  .dist-user-avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: rgba(66, 153, 225, 0.15);
+    color: #63b3ed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .dist-user-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dist-user-sub {
+    font-size: 0.78rem;
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dist-user-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.3rem;
+    flex-shrink: 0;
+  }
+
+  .dist-status-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.15rem 0.5rem;
+    border-radius: 9999px;
+  }
+
+  .dist-status-badge.active {
+    background: rgba(72, 187, 120, 0.15);
+    color: #68d391;
+  }
+
+  .dist-status-badge.inactive {
+    background: rgba(245, 101, 101, 0.15);
+    color: #fc8181;
+  }
+
+  .dist-user-cargo {
+    font-size: 0.72rem;
+    color: var(--color-text-secondary);
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    const API_BASE =
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1"
+        ? "http://localhost:8000"
+        : window.location.origin + "/api";
+
+    const token = localStorage.getItem("token") || "";
+
+    const overlay = document.getElementById("dist-users-popup");
+    const closeBtn = document.getElementById("dist-popup-close");
+    const titleEl = document.getElementById("dist-popup-title");
+    const subtitleEl = document.getElementById("dist-popup-subtitle");
+    const loadingEl = document.getElementById("dist-popup-loading");
+    const errorEl = document.getElementById("dist-popup-error");
+    const contentEl = document.getElementById("dist-popup-content");
+    const listEl = document.getElementById("dist-users-list");
+    const totalBadge = document.getElementById("dist-total-badge");
+    const activeBadge = document.getElementById("dist-active-badge");
+
+    function open(nombre, ciudad) {
+      overlay.classList.add("show");
+      document.body.style.overflow = "hidden";
+      // Reset
+      titleEl.textContent = nombre;
+      subtitleEl.textContent = ciudad || "";
+      loadingEl.style.display = "flex";
+      errorEl.style.display = "none";
+      contentEl.style.display = "none";
+
+      fetch(
+        `${API_BASE}/distribuidores/users.php?nombre=${encodeURIComponent(nombre)}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      )
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.status !== 200) throw new Error(data.message);
+          renderUsers(data.data);
+        })
+        .catch(() => {
+          loadingEl.style.display = "none";
+          errorEl.style.display = "flex";
+        });
+    }
+
+    function close() {
+      overlay.classList.remove("show");
+      document.body.style.overflow = "";
+    }
+
+    function renderUsers(users) {
+      loadingEl.style.display = "none";
+      contentEl.style.display = "block";
+
+      const active = users.filter((u) => u.activo).length;
+      totalBadge.textContent = `${users.length} asesor${users.length !== 1 ? "es" : ""}`;
+      activeBadge.textContent = `${active} activo${active !== 1 ? "s" : ""}`;
+
+      listEl.innerHTML = "";
+
+      if (users.length === 0) {
+        listEl.innerHTML =
+          '<p style="text-align:center;color:var(--color-text-secondary);padding:2rem 0">Sin asesores registrados</p>';
+        return;
+      }
+
+      users.forEach((u) => {
+        const initials =
+          ((u.nombre?.[0] || "") + (u.apellido?.[0] || "")).toUpperCase() ||
+          "?";
+        const row = document.createElement("div");
+        row.className = "dist-user-row";
+        row.innerHTML = `
+          <div class="dist-user-info">
+            <div class="dist-user-avatar">${initials}</div>
+            <div>
+              <div class="dist-user-name">${esc(u.nombre)} ${esc(u.apellido)}</div>
+              <div class="dist-user-sub">${esc(u.correo)} · CC ${esc(u.cedula)}</div>
+            </div>
+          </div>
+          <div class="dist-user-meta">
+            <span class="dist-status-badge ${u.activo ? "active" : "inactive"}">${u.activo ? "Activo" : "Inactivo"}</span>
+            <span class="dist-user-cargo">${esc(u.cargo || u.rol || "")}</span>
+          </div>
+        `;
+        // Clic en fila → abre UserProfilePopup si está disponible
+        row.addEventListener("click", () => {
+          if (window.UserProfilePopup) {
+            close();
+            window.UserProfilePopup.show(u.id);
+          }
+        });
+        row.style.cursor = "pointer";
+        listEl.appendChild(row);
+      });
+    }
+
+    function esc(t) {
+      if (!t) return "";
+      return String(t)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    // Cerrar
+    closeBtn?.addEventListener("click", close);
+    overlay?.addEventListener("click", (e) => {
+      if (e.target === overlay) close();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && overlay?.classList.contains("show")) close();
+    });
+
+    // API pública
+    window.DistributorUsersPopup = { open };
+  })();
+</script>

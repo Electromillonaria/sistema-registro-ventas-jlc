@@ -480,6 +480,14 @@ import Card from "../../Card.astro";
           </div>
         `;
 
+        // Hacer la tarjeta clickable para abrir el popup de usuarios
+        card.style.cursor = "pointer";
+        card.addEventListener("click", () => {
+          if (window.DistributorUsersPopup) {
+            window.DistributorUsersPopup.open(d.nombre, d.ciudad);
+          }
+        });
+
         grid.appendChild(card);
       });
     }

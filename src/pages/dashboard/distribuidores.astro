@@ -1,12 +1,14 @@
 ---
 import DashboardLayout from "../../layouts/DashboardLayout.astro";
 import DistributorManager from "../../components/dashboard/distribuidores/DistributorManager.astro";
-
-
+import DistributorUsersPopup from "../../components/dashboard/distribuidores/DistributorUsersPopup.astro";
+import UserProfilePopup from "../../components/usuarios/UserProfilePopup.astro";
 ---
 
 <DashboardLayout title="Gestión de Distribuidores">
   <DistributorManager />
+  <DistributorUsersPopup />
+  <UserProfilePopup />
 </DashboardLayout>
 
 <script is:inline>
