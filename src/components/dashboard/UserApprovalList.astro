@@ -260,14 +260,34 @@ interface Props {}
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #cbd5e0; /* Gris por defecto */
-    transition: 0.3s;
+    background-color: #4a5568; /* Gris oscuro por defecto */
+    transition: background-color 0.3s ease;
     border-radius: 34px;
   }
 
+  /* La esfera blanca */
+  .toggle-slider::before {
+    content: "";
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Activo: fondo verde + esfera a la derecha */
   .toggle-slider.active,
   input:checked + .toggle-slider {
-    background-color: #68d391; /* Verde cuando activo */
+    background-color: #48bb78;
+  }
+
+  .toggle-slider.active::before,
+  input:checked + .toggle-slider::before {
+    transform: translateX(32px);
   }
 
   input:disabled + .toggle-slider {
