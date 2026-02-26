@@ -23,9 +23,15 @@ import UserProfilePopup from "../../components/usuarios/UserProfilePopup.astro";
       }
 
       const user = JSON.parse(userStr);
-      if (user.rol !== "admin" && user.rol !== "administrador") {
-        console.warn("User is not admin, redirecting to dashboard");
-        alert("Acceso denegado. Esta página es solo para administradores.");
+      if (
+        user.rol !== "admin" &&
+        user.rol !== "administrador" &&
+        user.rol !== "auditor"
+      ) {
+        console.warn("User is not admin/auditor, redirecting to dashboard");
+        alert(
+          "Acceso denegado. Esta página es solo para administradores y auditores.",
+        );
         window.location.href = "/dashboard";
       }
     } catch (e) {
