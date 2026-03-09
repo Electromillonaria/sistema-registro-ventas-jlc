@@ -563,6 +563,7 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
         "Llave BRE-B",
         "Distribuidor",
         "Estado",
+        "Observaciones",
       ];
 
       // 2. Datos
@@ -577,6 +578,7 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
         sale.llave_breb || "",
         sale.nombre_distribuidor || "",
         sale.estado || "",
+        sale.observaciones || "",
       ]);
       // 3. Combinar en string CSV
       const csvContent = [
@@ -623,6 +625,7 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
           "Llave BRE-B",
           "Distribuidor",
           "Estado",
+          "Observaciones",
           "Link Foto",
         ],
 
@@ -639,6 +642,7 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
           sale.llave_breb || "",
           sale.nombre_distribuidor || "",
           sale.estado || "",
+          sale.observaciones || "",
           sale.foto_url || "",
         ]),
       ];
@@ -658,6 +662,7 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
         { wch: 20 }, // Llave BRE-B
         { wch: 25 }, // Distribuidor
         { wch: 12 }, // Estado
+        { wch: 35 }, // Observaciones
         { wch: 50 }, // Link Foto (más ancho para URLs)
       ];
       const wb = XLSX.utils.book_new();
