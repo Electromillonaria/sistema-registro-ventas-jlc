@@ -28,7 +28,7 @@ try {
         $params[':asesor_id'] = $user['user_id'];
     }
 
-    $sql .= " ORDER BY v.fecha_venta DESC, v.created_at DESC";
+    $sql .= " ORDER BY v.created_at DESC";
 
     $stmt = $conn->prepare($sql);
     $stmt->execute($params);
