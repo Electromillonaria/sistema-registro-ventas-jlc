@@ -387,6 +387,13 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
               const data = await res.json();
               if (data.status !== 200) {
                 alert("Error al guardar observación: " + (data.message || ""));
+              } else {
+                // ✅ Actualizar en memoria para que filtrar no revierta el valor
+                const id = parseInt(saleId);
+                const target = allSales.find((s) => s.id === id);
+                if (target) target.observaciones = observacion;
+                const target2 = currentFilteredSales.find((s) => s.id === id);
+                if (target2) target2.observaciones = observacion;
               }
             } catch (e) {
               console.error("Error guardando observación:", e);
@@ -673,13 +680,14 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
       // 1. Headers
       const headers = [
         "ID",
-        "Fecha",
+        "Fecha Registro",
+        "Fecha Venta",
         "N° Factura",
         "Producto",
         "N° Serie",
         "Asesor",
         "Cédula",
-        "Llave BRE-B",
+        "Nequi",
         "Distribuidor",
         "Estado",
         "Observaciones",
@@ -688,6 +696,7 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
       // 2. Datos
       const rows = sales.map((sale) => [
         sale.id || "",
+        sale.created_at || "",
         sale.fecha_venta || "",
         sale.numero_factura || "",
         sale.modelo_producto || sale.desc_producto || "",
@@ -733,14 +742,15 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
         // Headers
         [
           "ID",
-          "Fecha",
+          "Fecha Registro",
+          "Fecha Venta",
           "N° Factura",
           "Producto",
           "Código Producto",
           "N° Serie",
           "Asesor",
           "Cédula",
-          "Llave BRE-B",
+          "Nequi",
           "Distribuidor",
           "Estado",
           "Observaciones",
@@ -749,6 +759,7 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
         // Datos
         ...sales.map((sale) => [
           sale.id || "",
+          sale.created_at || "",
           sale.fecha_venta || "",
           sale.numero_factura || "",
           sale.modelo_producto || sale.desc_producto || "",
@@ -767,7 +778,8 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
       const ws = XLSX.utils.aoa_to_sheet(data);
       ws["!cols"] = [
         { wch: 8 }, // ID
-        { wch: 12 }, // Fecha
+        { wch: 20 }, // Fecha Registro
+        { wch: 12 }, // Fecha Venta
         { wch: 15 }, // N° Factura
         { wch: 25 }, // Producto
         { wch: 15 }, // Código Producto
@@ -778,6 +790,7 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
         { wch: 25 }, // Distribuidor
         { wch: 12 }, // Estado
         { wch: 35 }, // Observaciones
+        { wch: 20 }, // Fecha Registro
         { wch: 50 }, // Link Foto
       ];
 
