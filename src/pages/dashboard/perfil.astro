@@ -1,6 +1,7 @@
 ---
 import DashboardLayout from "../../layouts/DashboardLayout.astro";
 import Card from "../../components/Card.astro";
+import AnimatedCard from "../../components/AnimatedCard.astro";
 ---
 
 <DashboardLayout title="Mi Perfil">
@@ -102,7 +103,7 @@ import Card from "../../components/Card.astro";
       </Card>
 
       <!-- Datos de Cuenta -->
-      <Card title="Datos de Cuenta">
+      <AnimatedCard id="datos-cuenta-card" title="Datos de Cuenta">
         <div class="info-grid">
           <div class="info-field">
             <span class="field-label">Rol</span>
@@ -197,7 +198,7 @@ import Card from "../../components/Card.astro";
             <p id="fecha-registro">-</p>
           </div>
         </div>
-      </Card>
+      </AnimatedCard>
     </div>
   </div>
 </DashboardLayout>
@@ -562,6 +563,14 @@ import Card from "../../components/Card.astro";
         ? new Date(user.created_at).toLocaleDateString("es-CO")
         : "-";
 
+      // Check missing docs for animation
+      const missing = !user.rut || !user.llave_breb || !user.certificado || !user.certificado_rut;
+      const card = document.getElementById("datos-cuenta-card");
+      if (card) {
+        if (missing) card.classList.add("active");
+        else card.classList.remove("active");
+      }
+
       showProfile();
     }
 
@@ -694,7 +703,26 @@ import Card from "../../components/Card.astro";
               var p2 = document.getElementById("llave-breb");
               if (p2) p2.textContent = data.llave_breb || "-";
             }
-            setTimeout(function() { hideForm(docName); }, 1500);
+            setTimeout(function() { 
+              hideForm(docName); 
+              
+              // Validate if animation should continue
+              var eRut = document.getElementById("rut");
+              var eNeq = document.getElementById("llave-breb");
+              var eCert = document.getElementById("certificado-container");
+              var eCertRut = document.getElementById("certificado-rut-container");
+              
+              var noRut = !eRut || eRut.textContent.trim() === "-";
+              var noNeq = !eNeq || eNeq.textContent.trim() === "-";
+              var noCert = !eCert || eCert.innerHTML.includes("No adjuntado");
+              var noCertRut = !eCertRut || eCertRut.innerHTML.includes("No adjuntado");
+              
+              var cCard = document.getElementById("datos-cuenta-card");
+              if (cCard) {
+                if (noRut || noNeq || noCert || noCertRut) cCard.classList.add("active");
+                else cCard.classList.remove("active");
+              }
+            }, 1500);
           } else {
             setStatus(docName, data.message || "Error al guardar.", "error");
           }
