@@ -1,0 +1,86 @@
+---
+interface Props {
+  id?: string;
+  title?: string;
+  class?: string;
+}
+
+const { id, title, class: className } = Astro.props;
+---
+
+<div id={id} class:list={["animated-card", className]}>
+  <div class="animated-card-inner">
+    {title && <h2 class="card-title">{title}</h2>}
+    <slot />
+  </div>
+</div>
+
+<style>
+  .animated-card {
+    position: relative;
+    margin-bottom: 1rem;
+    border-radius: var(--radius-lg);
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-md);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .animated-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+
+  .animated-card-inner {
+    background-color: var(--color-bg-card);
+    padding: 1.5rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  .card-title {
+    margin-bottom: 0.5rem;
+    color: var(--color-text-main);
+    font-size: 2rem;
+    font-weight: 600;
+  }
+
+  /* Animated border state */
+  .animated-card.active {
+    border: none;
+    padding: 2px; /* Border width */
+    background: transparent;
+  }
+
+  .animated-card.active::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+      from 0deg,
+      transparent 70%,
+      var(--color-accent-hover) 100%
+    );
+    animation: rotate-border 3s linear infinite;
+    z-index: 0;
+  }
+
+  .animated-card.active::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    /* Use solid background to block the gradient since bg-card is semi-transparent */
+    background-color: var(--color-bg-main); 
+    border-radius: calc(var(--radius-lg) - 2px);
+    z-index: 1;
+  }
+
+  @keyframes rotate-border {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>

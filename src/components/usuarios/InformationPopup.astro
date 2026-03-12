@@ -1,0 +1,301 @@
+---
+// Componente: Popup de Actualización de info
+// Aparece automáticamente al cargar el dashboard si el usuario no lo ha omitido en la sesión.
+---
+
+<!-- info Update Popup Overlay -->
+<div id="info-update-popup" class="info-overlay">
+  <div class="info-container">
+    <div class="info-content">
+      <!-- Ícono y Encabezado -->
+      <div class="info-header">
+        <div class="info-icon-wrapper">
+          <!-- Ícono info -->
+          <svg
+            viewBox="0 -960 960 960"
+            stroke="currentColor"
+            class="info-icon"
+            fill="#fff"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.8"
+              d="M440-520v-280h440v280H440ZM80-160v-280h400v280H80Zm0-360v-280h280v280H80Zm440-80h280v-120H520v120ZM160-240h240v-120H160v120Zm0-360h120v-120H160v120Zm360 0ZM400-360ZM280-600ZM560-80v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4 22.5T903-300L683-80H560Zm300-263-37-37 37 37ZM620-140h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z"
+            ></path></svg
+          >
+        </div>
+        <h2 class="info-title">¡Actualiza tus documentos!</h2>
+        <p class="info-subtitle">
+          Para poder procesar el pago de tus bonos de forma rápida y sin
+          contratiempos, necesitamos que actualices y adjuntes los siguientes
+          documentos:
+          <br /><br />
+          &bull; Certificado de tu cuenta Nequi<br />
+          &bull; RUT
+          <br /><br />
+          Con esta información al día podremos agilizar el proceso.<br />
+          ¡Gracias por tu colaboración!
+        </p>
+      </div>
+
+      <!-- Botones -->
+      <div class="info-actions">
+        <button id="info-profile-btn" class="info-btn-primary">
+          Ir a mi Perfil
+        </button>
+        <button id="info-skip-btn" class="info-btn-secondary">
+          Omitir por ahora
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style is:global>
+  /* ===================== Overlay ===================== */
+  .info-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(6px);
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    animation: infoFadeIn 0.25s ease-out;
+  }
+
+  .info-overlay.show {
+    display: flex;
+  }
+
+  @keyframes infoFadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* ===================== Container ===================== */
+  .info-container {
+    width: 100%;
+    max-width: 480px;
+    animation: infoSlideUp 0.3s ease-out;
+  }
+
+  @keyframes infoSlideUp {
+    from {
+      transform: translateY(24px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  /* ===================== Content ===================== */
+  .info-content {
+    background-color: var(--color-bg-main);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 2.5rem 2rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+
+  /* ===================== Header ===================== */
+  .info-header {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .info-icon-wrapper {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .info-icon {
+    width: 2rem;
+    height: 2rem;
+    color: var(--color-accent-text);
+  }
+
+  .info-title {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--color-text-main);
+    margin: 0;
+  }
+
+  .info-subtitle {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .info-subtitle strong {
+    color: var(--color-text-main);
+  }
+
+  /* ===================== Form ===================== */
+  .info-form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .info-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .info-hint {
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    opacity: 0.7;
+  }
+
+  /* ===================== Actions ===================== */
+  .info-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .info-btn-primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    border-radius: var(--radius-lg);
+    border: none;
+    background-color: var(--color-accent);
+    color: var(--color-accent-text);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: var(--shadow-md);
+  }
+
+  .info-btn-primary:hover {
+    background-color: var(--color-accent-hover);
+    transform: translateY(-1px);
+  }
+
+  .info-btn-primary:active {
+    transform: translateY(0);
+  }
+
+  .info-btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .info-btn-icon {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  .info-btn-secondary {
+    width: 100%;
+    padding: 0.65rem 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .info-btn-secondary:hover {
+    background: var(--color-bg-card);
+    color: var(--color-text-main);
+    border-color: var(--color-text-secondary);
+  }
+
+  /* ===================== Responsive ===================== */
+  @media (max-width: 520px) {
+    .info-content {
+      padding: 2rem 1.25rem 1.5rem;
+    }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    // Clave única basada en el token JWT actual → reaparece en cada nuevo login
+    const token = localStorage.getItem("token");
+    if (!token) return; // Sin sesión, no hacer nada
+
+    // Usamos los últimos 20 chars del token como identificador de sesión
+    const sessionKey = "info_dismissed_" + token.slice(-20);
+
+    const overlay = document.getElementById("info-update-popup");
+    const profileBtn = document.getElementById("info-profile-btn");
+    const skipBtn = document.getElementById("info-skip-btn");
+
+    function maybeShow() {
+      // Solo omitir si fue descartado en ESTA sesión (mismo token)
+      if (sessionStorage.getItem(sessionKey)) return;
+      overlay.classList.add("show");
+      document.body.style.overflow = "hidden";
+    }
+
+    function hide() {
+      sessionStorage.setItem(sessionKey, "1");
+      overlay.classList.remove("show");
+      document.body.style.overflow = "";
+    }
+
+    // Omitir
+    if (skipBtn) {
+      skipBtn.addEventListener("click", hide);
+    }
+
+    // Ir al perfil
+    if (profileBtn) {
+      profileBtn.addEventListener("click", function () {
+        hide();
+        window.location.href = "/dashboard/perfil";
+      });
+    }
+
+    // Mostrar al cargar
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", maybeShow);
+    } else {
+      maybeShow();
+    }
+  })();
+</script>
