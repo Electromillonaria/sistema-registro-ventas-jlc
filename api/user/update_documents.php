@@ -26,7 +26,7 @@ if ($contentLength > 0 && $postMaxSize > 0 && empty($_POST) && empty($_FILES) &&
 }
 
 // ── Helper para subir un archivo ──────────────────────────────────────────────
-function subirArchivo(string $inputName): ?string {
+function subirArchivo(string $inputName, int $userId): ?string {
     if (!isset($_FILES[$inputName]) || $_FILES[$inputName]['error'] === UPLOAD_ERR_NO_FILE) {
         return null;
     }
@@ -79,14 +79,14 @@ try {
     }
 
     // Archivo: certificado Nequi
-    $certFilename = subirArchivo('certificado');
+    $certFilename = subirArchivo('certificado', $userId);
     if ($certFilename !== null) {
         $updates[] = 'certificado = :certificado';
         $params[':certificado'] = $certFilename;
     }
 
     // Archivo: certificado RUT
-    $certRutFilename = subirArchivo('certificado_rut');
+    $certRutFilename = subirArchivo('certificado_rut', $userId);
     if ($certRutFilename !== null) {
         $updates[] = 'certificado_rut = :certificado_rut';
         $params[':certificado_rut'] = $certRutFilename;
