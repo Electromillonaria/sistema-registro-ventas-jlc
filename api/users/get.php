@@ -64,6 +64,8 @@ try {
             activo,
             llave_breb,
             certificado,
+            rut,
+            certificado_rut,
             created_at,
             updated_at
         FROM usuarios
