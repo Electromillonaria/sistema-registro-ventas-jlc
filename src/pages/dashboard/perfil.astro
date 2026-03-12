@@ -116,24 +116,66 @@ import Card from "../../components/Card.astro";
             <span class="field-label">Nequi</span>
             <p id="llave-breb">-</p>
           </div>
+          <!-- Certificado Nequi -->
           <div class="info-field">
-            <span class="field-label">Certificado Nequi</span>
+            <div class="doc-field-header">
+              <span class="field-label">Certificado Nequi</span>
+              <button class="doc-edit-btn" data-doc="certificado" title="Actualizar certificado Nequi">
+                <svg viewBox="0 0 20 20" fill="currentColor" style="width:0.9rem;height:0.9rem"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg>
+              </button>
+            </div>
             <div id="certificado-container">
-              <span style="color:var(--color-text-secondary);font-size:0.85rem"
-                >No adjuntado</span
-              >
+              <span style="color:var(--color-text-secondary);font-size:0.85rem">No adjuntado</span>
+            </div>
+            <div id="certificado-edit-form" class="doc-edit-form" style="display:none">
+              <input type="file" id="certificado-input" accept=".jpg,.jpeg,.png,.pdf" class="doc-file-input" />
+              <label for="certificado-input" class="doc-file-label" id="certificado-file-label">Seleccionar archivo (JPG, PNG o PDF, máx 5MB)</label>
+              <div class="doc-edit-actions">
+                <button class="doc-save-btn" data-doc="certificado">Guardar</button>
+                <button class="doc-cancel-btn" data-doc="certificado">Cancelar</button>
+              </div>
+              <p class="doc-status" id="certificado-status"></p>
             </div>
           </div>
+
+          <!-- RUT -->
           <div class="info-field">
-            <span class="field-label">RUT</span>
+            <div class="doc-field-header">
+              <span class="field-label">RUT</span>
+              <button class="doc-edit-btn" data-doc="rut" title="Editar número RUT">
+                <svg viewBox="0 0 20 20" fill="currentColor" style="width:0.9rem;height:0.9rem"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg>
+              </button>
+            </div>
             <p id="rut">-</p>
+            <div id="rut-edit-form" class="doc-edit-form" style="display:none">
+              <input type="text" id="rut-input" placeholder="Número RUT" class="doc-text-input" />
+              <div class="doc-edit-actions">
+                <button class="doc-save-btn" data-doc="rut">Guardar</button>
+                <button class="doc-cancel-btn" data-doc="rut">Cancelar</button>
+              </div>
+              <p class="doc-status" id="rut-status"></p>
+            </div>
           </div>
+
+          <!-- Certificado RUT -->
           <div class="info-field">
-            <span class="field-label">Certificado RUT</span>
+            <div class="doc-field-header">
+              <span class="field-label">Certificado RUT</span>
+              <button class="doc-edit-btn" data-doc="certificado_rut" title="Actualizar certificado RUT">
+                <svg viewBox="0 0 20 20" fill="currentColor" style="width:0.9rem;height:0.9rem"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg>
+              </button>
+            </div>
             <div id="certificado-rut-container">
-              <span style="color:var(--color-text-secondary);font-size:0.85rem"
-                >No adjuntado</span
-              >
+              <span style="color:var(--color-text-secondary);font-size:0.85rem">No adjuntado</span>
+            </div>
+            <div id="certificado_rut-edit-form" class="doc-edit-form" style="display:none">
+              <input type="file" id="certificado_rut-input" accept=".jpg,.jpeg,.png,.pdf" class="doc-file-input" />
+              <label for="certificado_rut-input" class="doc-file-label" id="certificado_rut-file-label">Seleccionar archivo (JPG, PNG o PDF, máx 5MB)</label>
+              <div class="doc-edit-actions">
+                <button class="doc-save-btn" data-doc="certificado_rut">Guardar</button>
+                <button class="doc-cancel-btn" data-doc="certificado_rut">Cancelar</button>
+              </div>
+              <p class="doc-status" id="certificado_rut-status"></p>
             </div>
           </div>
           <div class="info-field">
@@ -274,6 +316,94 @@ import Card from "../../components/Card.astro";
       grid-template-columns: 1fr;
     }
   }
+
+  /* ── Edición inline de documentos ── */
+  .doc-field-header {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.3rem;
+  }
+  .doc-edit-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.15rem;
+    color: var(--color-text-secondary);
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+    border-radius: var(--radius-sm);
+  }
+  .doc-edit-btn:hover { color: var(--color-accent); }
+
+  .doc-edit-form {
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .doc-file-input { display: none; }
+  .doc-file-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.75rem;
+    border: 1.5px dashed var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-cardb);
+    color: var(--color-text-secondary);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    word-break: break-all;
+  }
+  .doc-file-label:hover { border-color: var(--color-accent); color: var(--color-accent); }
+  .doc-text-input {
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-card);
+    color: var(--color-text-main);
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .doc-text-input:focus { border-color: var(--color-accent); }
+  .doc-edit-actions {
+    display: flex;
+    gap: 0.4rem;
+  }
+  .doc-save-btn {
+    background: rgba(72,187,120,0.15);
+    color: #68d391;
+    border: 1px solid rgba(72,187,120,0.3);
+    border-radius: var(--radius-sm);
+    padding: 0.25rem 0.75rem;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: background 0.2s;
+  }
+  .doc-save-btn:hover { background: rgba(72,187,120,0.3); }
+  .doc-save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .doc-cancel-btn {
+    background: rgba(245,101,101,0.1);
+    color: #fc8181;
+    border: 1px solid rgba(245,101,101,0.2);
+    border-radius: var(--radius-sm);
+    padding: 0.25rem 0.75rem;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: background 0.2s;
+  }
+  .doc-cancel-btn:hover { background: rgba(245,101,101,0.2); }
+  .doc-status {
+    font-size: 0.8rem;
+    margin: 0;
+    min-height: 1.1em;
+  }
+  .doc-status.success { color: #68d391; }
+  .doc-status.error   { color: #fc8181; }
 </style>
 
 <script is:inline>
@@ -433,7 +563,124 @@ import Card from "../../components/Card.astro";
       profileContent.style.display = "none";
     }
 
-    // Cargar perfil al iniciar
     loadProfile();
+  })();
+</script>
+
+<script is:inline>
+  /* ── Edición inline de documentos ── */
+  (function () {
+    const API_BASE =
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1"
+        ? "http://localhost:8000"
+        : window.location.origin + "/api";
+
+    function certLink(filename, label) {
+      const token = localStorage.getItem("token") || "";
+      return `<a href="${API_BASE}/users/view_certificate.php?file=${encodeURIComponent(filename)}&token=${token}" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:0.4rem;padding:0.3rem 0.75rem;border-radius:var(--radius-md);border:1px solid var(--color-border);background:var(--color-bg-cardb);color:var(--color-text-secondary);font-size:0.8rem;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--color-accent)';this.style.color='var(--color-accent)'" onmouseout="this.style.borderColor='var(--color-border)';this.style.color='var(--color-text-secondary)'"><svg viewBox="0 0 20 20" fill="currentColor" style="width:0.9rem;height:0.9rem;flex-shrink:0"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/></svg>${label}</a>`;
+    }
+
+    function setStatus(docName, msg, type) {
+      const el = document.getElementById(docName + "-status");
+      if (el) { el.textContent = msg; el.className = "doc-status " + (type || ""); }
+    }
+
+    function hideForm(docName) {
+      const form = document.getElementById(docName + "-edit-form");
+      if (form) form.style.display = "none";
+      setStatus(docName, "");
+      const fi = document.getElementById(docName + "-input");
+      if (fi) fi.value = "";
+      const lbl = document.getElementById(docName + "-file-label");
+      if (lbl) lbl.textContent = "Seleccionar archivo (JPG, PNG o PDF, máx 5MB)";
+    }
+
+    // Botones lápiz → abrir/cerrar formulario
+    document.querySelectorAll(".doc-edit-btn").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        var docName = btn.dataset.doc;
+        var form = document.getElementById(docName + "-edit-form");
+        if (!form) return;
+        form.style.display = form.style.display === "none" ? "flex" : "none";
+        setStatus(docName, "");
+      });
+    });
+
+    // Mostrar nombre de archivo seleccionado
+    ["certificado", "certificado_rut"].forEach(function(docName) {
+      var input = document.getElementById(docName + "-input");
+      var label = document.getElementById(docName + "-file-label");
+      if (!input || !label) return;
+      input.addEventListener("change", function() {
+        label.textContent = (input.files && input.files[0])
+          ? input.files[0].name
+          : "Seleccionar archivo (JPG, PNG o PDF, máx 5MB)";
+      });
+    });
+
+    // Cancelar
+    document.querySelectorAll(".doc-cancel-btn").forEach(function(btn) {
+      btn.addEventListener("click", function() { hideForm(btn.dataset.doc); });
+    });
+
+    // Guardar
+    document.querySelectorAll(".doc-save-btn").forEach(function(btn) {
+      btn.addEventListener("click", async function() {
+        var docName = btn.dataset.doc;
+        var token = localStorage.getItem("token");
+        if (!token) return;
+
+        var fd = new FormData();
+        var hasData = false;
+
+        if (docName === "rut") {
+          var val = (document.getElementById("rut-input") || {}).value || "";
+          if (!val.trim()) { setStatus("rut", "Ingresa el número RUT.", "error"); return; }
+          fd.append("rut", val.trim());
+          hasData = true;
+        } else {
+          var fi = document.getElementById(docName + "-input");
+          if (!fi || !fi.files || !fi.files[0]) { setStatus(docName, "Selecciona un archivo primero.", "error"); return; }
+          fd.append(docName, fi.files[0]);
+          hasData = true;
+        }
+        if (!hasData) return;
+
+        btn.disabled = true;
+        setStatus(docName, "Guardando...", "");
+
+        try {
+          var res = await fetch(API_BASE + "/user/update_documents.php", {
+            method: "POST",
+            headers: { Authorization: "Bearer " + token },
+            body: fd
+          });
+          var data = await res.json();
+          if (data.status === 200) {
+            setStatus(docName, "✓ Guardado correctamente.", "success");
+            if (docName === "certificado" && data.certificado) {
+              var c = document.getElementById("certificado-container");
+              if (c) c.innerHTML = certLink(data.certificado, "Ver certificado");
+            }
+            if (docName === "certificado_rut" && data.certificado_rut) {
+              var c2 = document.getElementById("certificado-rut-container");
+              if (c2) c2.innerHTML = certLink(data.certificado_rut, "Ver certificado RUT");
+            }
+            if (docName === "rut" && data.rut !== undefined) {
+              var p = document.getElementById("rut");
+              if (p) p.textContent = data.rut || "-";
+            }
+            setTimeout(function() { hideForm(docName); }, 1500);
+          } else {
+            setStatus(docName, data.message || "Error al guardar.", "error");
+          }
+        } catch (e) {
+          setStatus(docName, "Error de conexión.", "error");
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    });
   })();
 </script>
